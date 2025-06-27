@@ -1,6 +1,6 @@
 # RL Ship Navigation: Q-Learning vs Deep Q-Learning
 
-Ein algorithmischer Vergleich zwischen Q-Learning und Deep Q-Learning Algorithmen für autonome Schiffsnavigation in Grid-Umgebungen.
+Ein Vergleich zwischen Q-Learning und Deep Q-Learning Algorithmen für autonome Schiffsnavigation in Grid-Umgebungen.
 
 ## 📋 Projektübersicht
 
