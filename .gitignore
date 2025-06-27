@@ -1,0 +1,38 @@
+# .gitignore
+
+# Virtuelle Umgebung
+rl-venv/
+.venv/
+
+# Python-Dateien
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Logs und temporäre Dateien
+*.log
+*.tmp
+
+# VSCode / PyCharm
+.idea/
+.vscode/
+
+# mkdocs Build-Verzeichnis
+site/
+
+# Exports und generierte Inhalte
+src/exports/
+src/evaluation_output/
+
+# Q-Learning Trainings-Outputs
+*.npy
+q_table*.npy
+training_log_*.json
+training_summary_*.json
+
+# Sonstiges
+.DS_Store
+.env
+
+q_table.npy
