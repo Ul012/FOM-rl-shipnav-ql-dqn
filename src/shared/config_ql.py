@@ -1,4 +1,4 @@
-# config.py - Erweiterte Version für Q-Learning und DQN
+# config_ql.py
 
 # ============================================================================
 # Basis-Parameter
@@ -56,27 +56,7 @@ EPSILON = 0.1  # Explorationsrate (initial: 0.1)
 EPISODES = 500  # Trainings-Episoden
 
 # ============================================================================
-# DQN Parameter
-# ============================================================================
-
-# Network Architecture
-DQN_STATE_SIZE = 18  # State vector size for DQN
-DQN_HIDDEN_SIZE = 128  # Hidden layer size
-DQN_LEARNING_RATE = 0.001  # Learning rate for neural network
-
-# Training Parameters
-DQN_EPISODES = 500  # Training episodes
-DQN_BATCH_SIZE = 32  # Batch size for experience replay
-DQN_BUFFER_SIZE = 5000  # Experience replay buffer size
-DQN_TARGET_UPDATE_FREQ = 100  # Target network update frequency
-
-# Exploration Parameters
-DQN_EPSILON_START = 1.0  # Initial exploration rate
-DQN_EPSILON_END = 0.01  # Final exploration rate
-DQN_EPSILON_DECAY = 0.995  # Exploration decay rate
-
-# ============================================================================
-# Training Parameter (Gemeinsam)
+# Training Parameter
 # ============================================================================
 
 MAX_STEPS = 100  # Max. Schritte pro Episode
@@ -96,10 +76,6 @@ EVAL_MAX_STEPS = 50  # Max. Schritte pro Episode in Evaluation (initial: 100)
 # Q-Tabelle Pfad basierend auf Modus
 def get_q_table_path(env_mode):
     return f"q_table_{env_mode}.npy"
-
-# DQN Model Pfad basierend auf Modus
-def get_dqn_model_path(env_mode):
-    return f"dqn_model_{env_mode}.pth"
 
 RESULTS_PATH = "results/"
 PLOTS_PATH = "plots/"
@@ -133,36 +109,3 @@ EXPORT_PATH = "../../exports/"  # Pfad für exportierte Dateien
 
 DEBUG_MODE = False  # Debug-Ausgaben aktivieren
 VERBOSE_TRAINING = True  # Detaillierte Training-Ausgaben
-
-# ============================================================================
-# DQN-spezifische Hilfsfunktionen
-# ============================================================================
-
-def get_dqn_config():
-    """Gibt DQN-spezifische Konfiguration zurück"""
-    return {
-        'state_size': DQN_STATE_SIZE,
-        'action_size': N_ACTIONS,
-        'learning_rate': DQN_LEARNING_RATE,
-        'discount_factor': GAMMA,
-        'exploration_rate': DQN_EPSILON_START,
-        'exploration_decay': DQN_EPSILON_DECAY,
-        'min_exploration_rate': DQN_EPSILON_END,
-        'buffer_size': DQN_BUFFER_SIZE,
-        'batch_size': DQN_BATCH_SIZE,
-        'target_update_freq': DQN_TARGET_UPDATE_FREQ,
-        'hidden_size': DQN_HIDDEN_SIZE,
-        'seed': SEED
-    }
-
-def get_training_config():
-    """Gibt gemeinsame Training-Konfiguration zurück"""
-    return {
-        'episodes': EPISODES,  # Für Q-Learning
-        'dqn_episodes': DQN_EPISODES,  # Für DQN
-        'max_steps': MAX_STEPS,
-        'eval_episodes': EVAL_EPISODES,
-        'eval_max_steps': EVAL_MAX_STEPS,
-        'env_mode': ENV_MODE,
-        'seed': SEED
-    }

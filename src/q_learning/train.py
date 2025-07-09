@@ -11,7 +11,7 @@ import numpy as np
 # Projektstruktur für Import anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# ENV_MODE flexibel setzen (über Umgebungsvariable oder config.py)
+# ENV_MODE flexibel setzen (über Umgebungsvariable oder config_ql.py)
 ENV_MODE = os.getenv("ENV_MODE", None)
 if ENV_MODE is None:
     from src.shared.config import ENV_MODE as CONFIG_ENV_MODE
