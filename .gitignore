@@ -1,38 +1,122 @@
-# .gitignore
-
-# Virtuelle Umgebung
-rl-venv/
-.venv/
-
-# Python-Dateien
+# Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Logs und temporäre Dateien
-*.log
-*.tmp
-
-# VSCode / PyCharm
-.idea/
-.vscode/
-
-# mkdocs Build-Verzeichnis
-site/
-
-# Exports und generierte Inhalte
-src/exports/
-src/evaluation_output/
-
-# Q-Learning Trainings-Outputs
-*.npy
-q_table*.npy
-training_log_*.json
-training_summary_*.json
-
-# Sonstiges
-.DS_Store
+# Virtual Environments
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-q_table.npy
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch Models
+*.pth
+*.pt
+*.pkl
+*.pickle
+
+# Q-Learning Models
+*.npy
+q_table_*.npy
+
+# DQN Models
+dqn_model_*.pth
+model_*.pth
+checkpoint_*.pth
+
+# Training Logs
+logs/
+runs/
+tensorboard_logs/
+wandb/
+
+# Results and Exports
+exports/*.png
+exports/*.pdf
+exports/*.csv
+exports/*.txt
+!exports/.gitkeep
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation builds
+site/
+docs/_build/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Large data files (optional)
+data/large_datasets/
+*.h5
+*.hdf5
+
+# Experiment tracking
+mlruns/
+.mlflow/
+
+# Custom ignores for this project
+experiments/temp/
+models/archived/
+results/old/

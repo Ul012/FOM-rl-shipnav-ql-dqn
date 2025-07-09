@@ -10,6 +10,19 @@ Dieses Projekt vergleicht die Leistung von klassischem Q-Learning und Deep Q-Lea
 - **Dynamische Szenarien**: Zufällige Start-, Ziel- oder Hindernis-Positionen  
 - **Container-Umgebung**: Pickup/Dropoff-Aufgaben
 
+## 🧠 Algorithmen
+
+### Q-Learning
+- Tabellenbasierter Ansatz mit expliziter Q-Tabelle
+- Epsilon-Greedy Exploration
+- Optimal für kleine, diskrete Zustandsräume
+
+### Deep Q-Learning (DQN)
+- Neuronale Netzwerke approximieren Q-Funktion
+- Experience Replay für stabiles Training
+- Target Network für stabilere Updates
+- Skaliert auf größere Zustandsräume
+
 ## 🏗️ Projektstruktur
 
 ```
@@ -26,7 +39,12 @@ ship-navigation-ql-dqn/
 │   │   ├── visualize_policy.py
 │   │   ├── compare_scenarios.py
 │   │   └── utils/        # Q-Learning spezifische Utils
-│   ├── dqn/             # Deep Q-Learning Implementation (in Entwicklung)
+│   ├── dqn/             # Deep Q-Learning Implementation
+│   │   ├── deep_q_agent.py
+│   │   ├── train.py
+│   │   └── train_all_scenarios.py
+│   ├── comparison/       # Algorithmus-Vergleich
+│   │   └── compare_algorithms.py
 │   └── experiments/      # Vergleichsexperimente
 ├── exports/             # Trainings-Ergebnisse und Plots
 ├── docs/               # Dokumentation
@@ -87,12 +105,40 @@ python visualize_policy.py
 python compare_scenarios.py
 ```
 
+### Deep Q-Learning Training
+
+```bash
+cd src/dqn
+
+# Einzelnes Szenario trainieren
+python train.py --mode static --episodes 500
+
+# Alle Szenarien trainieren
+python train_all_scenarios.py --episodes 500 --runs 3
+
+# Nur Evaluation (lädt gespeichertes Modell)
+python train.py --mode static --eval-only
+```
+
+### Algorithmus-Vergleich
+
+```bash
+cd src/comparison
+
+# Vollständiger Vergleich beider Algorithmen
+python compare_algorithms.py --runs 5
+
+# Schneller Test-Vergleich
+python compare_algorithms.py --ql-episodes 100 --dqn-episodes 100 --runs 2
+```
+
 ### Konfiguration anpassen
 
 Editiere `src/shared/config.py` für:
-- Hyperparameter (Lernrate, Epsilon, Gamma)
-- Environment-Settings (Grid-Größe, Rewards)
-- Training-Parameter (Episoden, Max-Steps)
+- **Q-Learning**: Lernrate, Epsilon, Gamma
+- **DQN**: Network-Architektur, Batch-Size, Experience Replay
+- **Environment**: Grid-Größe, Rewards, Max-Steps
+- **Training**: Episoden, Seeds für Reproduzierbarkeit
 
 ## 📊 Szenarien
 
@@ -120,20 +166,36 @@ Editiere `src/shared/config.py` für:
 
 Nach dem Training werden folgende Dateien erstellt:
 
+**Q-Learning:**
 - **Q-Tabellen**: `q_table_{scenario}.npy`
 - **Lernkurven**: `exports/learning_curve_{scenario}.png`
 - **Erfolgsraten**: `exports/success_curve_{scenario}.png`
-- **Vergleichsreports**: `exports/comparison_report.pdf`
-- 
-## 🧪 Experimente
 
-### Aktuell verfügbar:
-- ✅ Q-Learning für alle Szenarien
-- ✅ Hyperparameter-Tuning
-- ✅ Visualisierung und Evaluation
+**Deep Q-Learning:**
+- **Modelle**: `dqn_model_{scenario}.pth`
+- **Trainingsverlauf**: `exports/dqn_training_{scenario}.pdf`
+- **Verlustkurven**: Integriert in Trainingsplots
 
-### In Entwicklung:
-- 🚧 Deep Q-Learning (DQN) Implementation
-- 🚧 Direkter Algorithmus-Vergleich
-- 🚧 Performance-Benchmarks
-- 🚧 Mkdocs zur Dokumentation
+**Vergleiche:**
+- **Algorithmus-Vergleich**: `exports/algorithm_comparison.pdf`
+- **Detaillierte CSV**: `exports/algorithm_comparison.csv`
+- **Heatmaps**: `exports/algorithm_heatmap_comparison.pdf`
+
+## 🔧 Troubleshooting
+
+### Häufige Probleme
+
+**ModuleNotFoundError:**
+```bash
+pip install -r requirements.txt
+```
+
+**CUDA/GPU Probleme (DQN):**
+- DQN erkennt automatisch verfügbare Hardware
+- Bei Problemen: CPU-Modus in `config.py` forcieren
+
+**Memory Errors (DQN):**
+- Reduziere `DQN_BATCH_SIZE` oder `DQN_BUFFER_SIZE` in `config.py`
+
+**Import Errors:**
+- Führe Befehle aus dem Projekt-Root aus: `python -m src.dqn.train`
