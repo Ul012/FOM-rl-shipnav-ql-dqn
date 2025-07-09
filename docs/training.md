@@ -1,170 +1,66 @@
 # Training und Konfiguration
 
-## Q-Learning Training
+## Q-Learning
 
-### Einzelszenario
-```bash
-cd src/q_learning
-python train.py
-```
+### Trainingsablauf
 
-Erstellt:
-- Q-Tabelle: `exports/q_table_{szenario}.npy`
-- Lernkurven und Erfolgsstatistiken als PDF
+Das Q-Learning-Training erfolgt durch iteratives Ausführen von Episoden in einer simulierten Umgebung. Dabei werden die Q-Werte nach jedem Schritt entsprechend der Lernregel angepasst.
 
-### Alle Szenarien
-```bash
-python train_all_scenarios.py
-```
+Typischer Ablauf:
+- Start der Umgebung im gewünschten Szenario
+- Schrittweises Lernen durch Interaktion mit der Umgebung
+- Speicherung der Q-Tabelle und optionaler Auswertungen
 
-Optionen:
-- Szenario-Auswahl (einzeln/alle)
-- Visualisierungsmodus (interaktiv/automatisiert)
-- Training-Modus (sequenziell/parallel)
+Es können einzelne oder mehrere vordefinierte Szenarien nacheinander trainiert werden. Die Trainingsparameter werden zentral über eine Konfigurationsdatei gesteuert.
 
-## Deep Q-Learning Training
+## Deep Q-Learning (DQN)
 
-### Einzelszenario
-```bash
-cd src/dqn
+### Trainingsablauf
 
-# Training
-python train.py --mode static --episodes 500
-python train.py --mode container --episodes 300
+Auch das DQN-Training erfolgt episodisch. Die Aktualisierung der Netzwerkgewichte basiert auf gesampelten Zustandsübergängen aus einem Replay-Puffer. Zusätzlich werden ein Zielnetzwerk und batchweises Lernen verwendet.
 
-# Nur Evaluation (lädt Modell)
-python train.py --mode static --eval-only
+Wichtige Merkmale:
+- Netzwerkstruktur und Lernparameter sind konfigurierbar
+- Training kann mit oder ohne Visualisierung durchgeführt werden
+- Es besteht die Möglichkeit, vortrainierte Modelle zu laden und nur zu evaluieren
 
-# Ohne Plots
-python train.py --mode static --episodes 200 --no-plot
-```
+## Algorithmusvergleich
 
-Erstellt:
-- Modell: `exports/dqn_model_{szenario}.pth`
-- Training-Plots mit Loss-Kurven
+Ein separater Vergleichsmodus ermöglicht die parallele oder sequenzielle Auswertung beider Algorithmen. Dabei werden gemeinsame Metriken erfasst, etwa Erfolgsraten, durchschnittliche Schritte oder kumulierte Belohnungen. Die Ergebnisse werden tabellarisch und grafisch zusammengeführt.
 
-### Alle Szenarien
-```bash
-# Standard
-python train_all_scenarios.py
+## Konfigurierbare Parameter
 
-# Angepasst
-python train_all_scenarios.py --episodes 300 --runs 2
-python train_all_scenarios.py --scenarios static container
-```
+Die wichtigsten Einstellungen für Training und Evaluation werden in einer zentralen Konfigurationsdatei verwaltet. Diese umfasst unter anderem:
 
-## Algorithmus-Vergleich
+- Wahl des Szenarios
+- Anzahl der Trainings-Episoden
+- Maximale Schrittanzahl pro Episode
+- Parameter für Exploration und Lernrate
+- Netzwerkspezifische Hyperparameter (DQN)
 
-```bash
-cd src/comparison
-
-# Vollständig
-python compare_algorithms.py --runs 5
-
-# Test
-python compare_algorithms.py --ql-episodes 100 --dqn-episodes 100 --runs 2
-
-# Spezifisch
-python compare_algorithms.py --scenarios static random_start
-```
-
-Erstellt:
-- Vergleichsplots und Heatmaps
-- CSV-Dateien mit Statistiken
-- Performance-Analysen
-
-## Parameter
-
-### Zentrale Konfiguration (`shared/config.py`)
-
-```python
-# Umgebung
-ENV_MODE        # Szenario-Auswahl
-EPISODES        # Q-Learning Episoden
-DQN_EPISODES    # DQN Episoden
-MAX_STEPS       # Schritte pro Episode
-SEED            # Reproduzierbarkeit
-
-# Q-Learning
-ALPHA           # Lernrate
-GAMMA           # Diskontfaktor
-EPSILON         # Explorationsrate
-
-# DQN
-DQN_LEARNING_RATE       # Neural Network Lernrate
-DQN_BATCH_SIZE          # Batch-Größe
-DQN_BUFFER_SIZE         # Experience Replay Puffer
-DQN_HIDDEN_SIZE         # Network-Architektur
-DQN_TARGET_UPDATE_FREQ  # Target Network Updates
-
-```
-
-### Export-Pfade
-```python
-# Algorithmus-spezifische Exports
-Q_LEARNING_EXPORT_PATH = "exports/"      # → src/q_learning/exports/
-DQN_EXPORT_PATH = "exports/"             # → src/dqn/exports/
-COMPARISON_EXPORT_PATH = "exports/"      # → src/comparison/exports/
-```
+Diese Werte sind jederzeit anpassbar und ermöglichen eine flexible Steuerung des Experiments.
 
 ## Szenarien
 
-| Szenario | ENV_MODE | Q-Learning | DQN |
-|----------|----------|------------|-----|
-| Statisch | `"static"` | ✅ | ✅ |
-| Zufälliger Start | `"random_start"` | ✅ | ✅ |
-| Zufälliges Ziel | `"random_goal"` | ✅ | ✅ |
-| Zufällige Hindernisse | `"random_obstacles"` | ✅ | ✅ |
-| Container | `"container"` | ✅ | ✅ |
+Das System unterstützt mehrere Umgebungsvarianten, die sich in Start-/Zielbedingungen und Aufgabenstellung unterscheiden. Typische Szenarien umfassen:
 
-## Generierte Dateien
+- **Statisches Layout**: Feste Start- und Zielpositionen
+- **Zufälliger Start/Ziel**: Dynamische Start- oder Zielsetzung
+- **Variable Hindernisse**: Zufällige Platzierung von Blockaden
+- **Erweiterte Aufgaben**: Transport eines Objekts zum Zielort
 
-### Q-Learning (`src/q_learning/exports/`)
-```
-q_table_{scenario}.npy               # Trainierte Q-Tabellen
-train_learning_curve.pdf             # Lernkurven
-train_success_curve.pdf              # Erfolgsraten
-train_statistics.pdf                 # Statistiken
-evaluate_policy_*.pdf                # Evaluation
-```
+Jeder dieser Modi kann einzeln oder im Batch trainiert und evaluiert werden.
 
-### DQN (`src/dqn/exports/`)
-```
-dqn_model_{scenario}.pth             # Trainierte Modelle
-dqn_training_{scenario}.pdf          # Training-Plots
-dqn_all_scenarios_summary.csv        # Zusammenfassung
-dqn_all_scenarios_comparison.pdf     # Vergleiche
-```
+## Export und Evaluation
 
-### Comparison (`src/comparison/exports/`)
-```
-algorithm_comparison.pdf             # Hauptvergleich
-algorithm_comparison.csv             # Daten
-algorithm_heatmap_comparison.pdf     # Heatmaps
-```
+Während des Trainings und der anschließenden Auswertung werden automatisch verschiedene Ergebnisse gespeichert:
+
+- Lernkurven (z. B. Erfolgsrate über Episoden)
+- Ausgewertete Modelle oder Q-Tabellen
+- Vergleichsdaten (z. B. CSVs oder Diagramme)
+
+Diese Dateien dienen der Analyse, dem Vergleich und der Reproduzierbarkeit der Ergebnisse.
 
 ## Reproduzierbarkeit
 
-### Seed-Kontrolle
-- Zentrale Seed-Kontrolle über `SEED` in `shared/config.py`
-- Deterministisches Verhalten bei gleichem Seed
-- Reproduzierbare Ergebnisse für beide Algorithmen
-
-### Hardware
-- **Q-Learning**: CPU-optimiert
-- **DQN**: GPU-Support (automatisch erkannt)
-
-## Troubleshooting
-
-### Q-Learning
-- Niedrige Erfolgsrate → ALPHA, EPSILON erhöhen
-- Langsame Konvergenz → Mehr EPISODES
-
-### DQN
-- Nicht konvergierend → Lernrate reduzieren
-- Memory Errors → Batch/Buffer Size reduzieren
-- Langsam → GPU aktivieren
-
-### Allgemein
-- Import Errors → Aus `src/` ausführen
-- Fehlende Exports → Export-Ordner erstellen
+Für konsistente Ergebnisse werden alle relevanten Zufallsquellen kontrolliert. Ein globaler Seed stellt sicher, dass identische Konfigurationen wiederholbare Resultate liefern – sowohl für Q-Learning als auch für DQN. Unterschiede in der verwendeten Hardware (CPU/GPU) werden berücksichtigt.

@@ -101,7 +101,7 @@ DPI_SETTING = 100  # Auflösung für gespeicherte Plots
 # ============================================================================
 
 EXPORT_PDF = True  # PDF-Export für Visualisierungen
-EXPORT_PATH = "../../exports/"  # Pfad für exportierte Dateien
+EXPORT_PATH = "../dqn/exports/"  # Pfad für exportierte Dateien
 
 # ============================================================================
 # Debug Parameter

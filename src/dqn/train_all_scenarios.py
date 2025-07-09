@@ -310,7 +310,8 @@ class DQNScenarioRunner:
         plot_path = os.path.join(EXPORT_PATH, 'dqn_all_scenarios_comparison.pdf')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
         print(f"Vergleichs-Plot gespeichert: {plot_path}")
-        plt.show()
+#       plt.show() # alle Visualisierungen werden interaktiv angezeigt
+        plt.close()
 
 
 def main():

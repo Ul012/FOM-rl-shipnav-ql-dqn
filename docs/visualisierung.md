@@ -1,12 +1,10 @@
 # Visualisierung und Analyse
 
-## Q-Learning Visualisierung
+## Q-Learning
 
 ### Policy-Darstellung
-```bash
-cd src/q_learning
-python visualize_policy.py
-```
+
+Für Q-Learning kann die erlernte Policy grafisch visualisiert werden. Dies erfolgt durch eine animierte Darstellung der Agentenentscheidungen innerhalb der Gitterumgebung. Zusätzlich stehen Pfeildiagramme und Zustandsübersichten zur Verfügung.
 
 Pygame-Animation mit Emojis:
 - 🚢 Agent/Schiff
@@ -15,176 +13,67 @@ Pygame-Animation mit Emojis:
 - ↑→↓← Policy-Pfeile
 
 ### Evaluation
-```bash
-python evaluate_policy.py
-```
 
-Erstellt:
-- Erfolgsraten-Balkendiagramm
-- Reward-Histogramm
-- Terminierungsarten-Verteilung
+Zur Auswertung des Trainings können verschiedene Statistiken erzeugt werden:
+- Erfolgsraten über alle Episoden
+- Belohnungsverteilung
+- Gründe für das Beenden von Episoden (z. B. Ziel erreicht, Timeout, Kollision)
 
-### Szenarien-Vergleich
-```bash
-python compare_scenarios.py
-```
+### Szenarienvergleich
 
-Erstellt:
-- Erfolgsraten aller Q-Learning Szenarien
-- Terminierungsarten-Analyse
-- Statistische Vergleichstabelle
+Es ist möglich, die Ergebnisse aus mehreren Szenarien gegenüberzustellen. Dabei werden Erfolgskennzahlen und Abbrucharten analysiert und visualisiert.
 
 ### Q-Tabellen-Inspektion
-```bash
-python inspect_q_tables.py
-```
 
-Interaktive Optionen:
-1. Aktuelles Szenario
-2. Spezifisches Szenario
-3. Alle Q-Tabellen
-4. Formen-Vergleich
-5. Matrix-Darstellung
+Für weiterführende Analysen kann die trainierte Q-Tabelle interaktiv untersucht werden. Die Darstellung kann je nach Anwendungsfall angepasst werden, etwa als Matrixansicht oder als komprimierte Übersicht.
 
-## DQN Visualisierung
+## Deep Q-Learning (DQN)
 
-### Training-Plots
-DQN Training erstellt automatisch:
-- Lernkurven mit Moving Average
-- Erfolgskurven mit Exploration Decay
-- Loss-Entwicklung
-- 4-Panel Statistik-Übersicht
+### Trainingsvisualisierung
+
+Beim DQN-Training werden automatisch verschiedene Plots erzeugt, etwa:
+- Entwicklung des Trainingsverlusts (Loss)
+- Verlauf der durchschnittlichen Belohnung
+- Erfolgsrate im Zeitverlauf
+- Zusammenfassende Mehrfachdarstellungen
 
 ### Evaluation
-```bash
-cd src/dqn
-python train.py --mode static --eval-only
-```
 
-Zeigt gelernte DQN Policy mit denselben Emojis.
+Analog zum Q-Learning kann auch die DQN-Policy visualisiert und analysiert werden. Die Darstellung erfolgt konsistent mit der Q-Learning-Ansicht zur Vergleichbarkeit.
 
-### Multi-Szenario
-```bash
-python train_all_scenarios.py
-```
+### Szenarienvergleich
 
-Erstellt:
-- Performance-Vergleiche aller DQN Szenarien
-- Hardware-Metriken (GPU/CPU)
-- Batch-Statistiken
+Ergebnisse aus mehreren Szenarien lassen sich aggregieren und vergleichen. Neben Erfolgskennzahlen können auch statistische Metriken und Hardware-Auslastungen dokumentiert werden.
 
-## Algorithmus-Vergleich
+## Algorithmusvergleich
 
-```bash
-cd src/comparison
-python compare_algorithms.py
-```
+Zur Gegenüberstellung von Q-Learning und DQN werden standardisierte Visualisierungen erstellt. Dazu zählen:
 
-### Vergleichs-Visualisierungen
+- Durchschnittliche Erfolgsraten pro Szenario
+- Durchschnittliche Episodenschritte
+- Verteilungen der erzielten Belohnungen
+- Differenzanalysen zwischen beiden Methoden
 
-1. **Performance-Vergleich**
-   - Erfolgsraten: Q-Learning vs DQN
-   - Durchschnittliche Schritte
-   - Durchschnittliche Belohnungen
-   - Error Bars über mehrere Runs
+Die Ergebnisse werden tabellarisch und grafisch zusammengeführt und ermöglichen eine differenzierte Bewertung der Algorithmen.
 
-2. **Heatmaps**
-   - Q-Learning Performance pro Szenario
-   - DQN Performance pro Szenario
-   - Direkte Unterschiede
+## Analyseexporte
 
-3. **Box Plots**
-   - Erfolgsrate-Verteilungen
-   - Schritte-Verteilungen
-   - Reward-Verteilungen
+Während Training und Evaluation entstehen automatisch exportierte Ausgabedateien wie:
+- PDF-Diagramme
+- CSV-Tabellen
+- Screenshots von Agentenverläufen
 
-## Export-Dateien
-
-### Q-Learning (`src/q_learning/exports/`)
-```
-train_learning_curve.pdf
-train_success_curve.pdf
-train_statistics.pdf
-evaluate_policy_success_rate.pdf
-evaluate_policy_reward_histogram.pdf
-success_rates.pdf
-failure_modes.pdf
-```
-
-### DQN (`src/dqn/exports/`)
-```
-dqn_training_{scenario}.pdf
-dqn_all_scenarios_summary.csv
-dqn_all_scenarios_comparison.pdf
-```
-
-### Comparison (`src/comparison/exports/`)
-```
-algorithm_comparison.pdf
-algorithm_comparison.csv
-algorithm_comparison_stats.csv
-algorithm_heatmap_comparison.pdf
-```
-
-### Screenshots
-```
-exports/agent_final_position.png
-```
-
-## Interaktive Features
-
-### Q-Learning
-- Echtzeit Q-Tabelle Animation
-- Schritt-für-Schritt Logging (Position, Q-Werte, Reward)
-- Automatische Screenshots
-
-### DQN
-- Neural Network Entscheidungs-Animation
-- Experience Replay Status
-- Network-Output Logging
-
-### Vergleich
-- Algorithm Toggle zwischen Policies
-- Side-by-Side Visualisierung
-- Performance Overlay
+Diese dienen der weiteren Analyse, der Dokumentation und dem Vergleich von Trainingsverläufen.
 
 ## Konfiguration
 
-```python
-# In shared/config.py
-EXPORT_PDF = True                    # PDF-Export aktivieren
-CELL_SIZE = 80                       # Pygame-Zellgröße
-FRAME_DELAY = 0.4                    # Animationsgeschwindigkeit
-SHOW_VISUALIZATIONS = True           # Interaktive Plots
+Das Visualisierungsverhalten kann über Parameter gesteuert werden:
+- Aktivierung oder Deaktivierung interaktiver Fenster
+- Animationsgeschwindigkeit
+- Exportformat (z. B. nur PDF statt Live-Plot)
 
-# Algorithmus-spezifische Export-Pfade
-Q_LEARNING_EXPORT_PATH = "exports/"  # → src/q_learning/exports/
-DQN_EXPORT_PATH = "exports/"         # → src/dqn/exports/
-COMPARISON_EXPORT_PATH = "exports/"  # → src/comparison/exports/
-```
+Diese Einstellungen werden zentral in der Konfigurationsdatei verwaltet und gelten für beide Algorithmen.
 
-## Performance-Optimierung
+## Systemarchitektur
 
-### Für schnelle Verarbeitung
-```python
-SHOW_VISUALIZATIONS = False          # Nur PDF-Export
-EXPORT_PDF = True                    # Für spätere Analyse
-```
-
-### Für interaktive Analyse
-```python
-SHOW_VISUALIZATIONS = True           # Matplotlib-Fenster
-FRAME_DELAY = 0.2                    # Schnellere Animation
-```
-
-## Technische Details
-
-### Gemeinsame Komponenten
-- Pygame Rendering (identisch für beide Algorithmen)
-- PDF Export-Management
-- Matplotlib Styling
-
-### Algorithmus-spezifisch
-- **Q-Learning**: `q_learning/utils/visualization.py`
-- **DQN**: PyTorch-kompatible Plots
-- **Shared**: Einheitliche Formatierung
+Visualisierungen greifen auf gemeinsame Module zurück, etwa zur Anzeige, zur Formatierung und zur Verwaltung von Ausgabepfaden. Unterschiede zwischen Q-Learning und DQN werden intern behandelt, ohne dass sich dies auf die Bedienung auswirkt.
