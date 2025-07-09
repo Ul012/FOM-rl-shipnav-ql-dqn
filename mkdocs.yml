@@ -1,0 +1,75 @@
+site_name: RL Ship Navigation - Q-Learning vs Deep Q-Learning
+site_description: Vergleich zwischen Q-Learning und Deep Q-Learning für autonome Schiffsnavigation
+site_author: Ship Navigation RL Project
+
+# Repository
+repo_url: https://github.com/Ul012/FOM-rl-shipnav-ql-dql
+repo_name: FOM-rl-shipnav-ql-dql
+
+# Theme
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+# Navigation
+nav:
+  - 🏠 Startseite: index.md
+  - ⚙️ Setup: setup.md
+  - 🧠 Funktionsweise: funktionsweise.md
+  - 🎯 Training: training.md
+  - 📊 Visualisierung: visualisierung.md
+  - 📚 Entwicklung: dokumentation.md
+
+# Markdown Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+
+# Plugins
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Ul012/FOM-rl-shipnav-ql-dql
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
