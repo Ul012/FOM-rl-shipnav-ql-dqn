@@ -1,4 +1,4 @@
-# src/comparison/compare_algorithms.py
+# src/comparison/fair_algorithm_comparison.py
 
 import sys
 import os
@@ -6,230 +6,479 @@ import time
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Protocol
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from pathlib import Path
 
 # Projektstruktur für Imports anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.dqn.train import DQNTrainer
-from src.shared.config import EPISODES, DQN_EPISODES, EXPORT_PATH, SEED
+# ZENTRALE CONFIG - Alle Parameter stammen aus der gemeinsamen config.py
+from src.shared.config import (
+    SEED, EPISODES, DQN_EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, MAX_STEPS,
+    EXPORT_PATH_COMP, get_dqn_model_path, get_q_table_path,
+    GAMMA, ALPHA, EPSILON,  # Q-Learning Parameter
+    DQN_LEARNING_RATE, DQN_EPSILON_START, DQN_EPSILON_END, DQN_EPSILON_DECAY  # DQN Parameter
+)
 
 
-class AlgorithmComparison:
-    """Vergleicht Q-Learning und DQN Algorithmen."""
+@dataclass
+class ComparisonConfig:
+    """Zentrale Konfiguration für fairen Algorithmus-Vergleich - basiert vollständig auf config.py."""
 
-    def __init__(self):
-        self.scenarios = [
-            'static',
-            'random_start',
-            'random_goal',
-            'random_obstacles',
-            'container'
-        ]
+    # Alle Parameter aus der zentralen config.py
+    base_seed: int = SEED
+    eval_episodes: int = EVAL_EPISODES
+    max_steps_per_episode: int = EVAL_MAX_STEPS  # Verwende EVAL_MAX_STEPS für Evaluation
 
-        self.algorithms = ['Q-Learning', 'DQN']
+    # Episodes aus config.py
+    q_learning_episodes: int = EPISODES
+    dqn_episodes: int = DQN_EPISODES
 
-    def run_comparison(self, episodes_ql: int = None, episodes_dqn: int = None,
-                       num_runs: int = 3) -> Dict[str, Any]:
+    # Szenarien
+    scenarios: List[str] = None
+
+    def __post_init__(self):
+        if self.scenarios is None:
+            self.scenarios = [
+                'static',
+                'random_start',
+                'random_goal',
+                'random_obstacles',
+                'container'
+            ]
+
+    def get_seed_for_run(self, run: int) -> int:
+        """Gibt deterministischen Seed für einen spezifischen Run zurück."""
+        return self.base_seed + run
+
+    def validate_and_report_config(self):
+        """Validiert und berichtet über die verwendete Konfiguration."""
+        print("🔧 FAIRNESS-KONFIGURATION (aus config.py)")
+        print("=" * 60)
+        print(f"Basis-Seed: {self.base_seed}")
+        print(f"Evaluation Episodes: {self.eval_episodes}")
+        print(f"Max Steps per Evaluation Episode: {self.max_steps_per_episode}")
+        print()
+        print("Training-Parameter (für Referenz):")
+        print(f"  Q-Learning Episodes (Training): {self.q_learning_episodes}")
+        print(f"  DQN Episodes (Training): {self.dqn_episodes}")
+        print()
+        print("Hyperparameter-Synchronisation:")
+        print(f"  Discount Factor (γ): {GAMMA} (beide Algorithmen)")
+        print(f"  Q-Learning α: {ALPHA}, ε: {EPSILON}")
+        print(f"  DQN Learning Rate: {DQN_LEARNING_RATE}")
+        print(f"  DQN ε: {DQN_EPSILON_START} → {DQN_EPSILON_END} (decay: {DQN_EPSILON_DECAY})")
+        print()
+        print(f"Szenarien: {self.scenarios}")
+
+        # Fairness-Checks
+        fairness_issues = []
+
+        if self.q_learning_episodes != self.dqn_episodes:
+            fairness_issues.append(
+                f"ℹ️  INFO: Unterschiedliche Training-Episodes "
+                f"(Q-Learning: {self.q_learning_episodes}, DQN: {self.dqn_episodes})"
+            )
+
+        if self.eval_episodes < 100:
+            fairness_issues.append(
+                f"⚠️  WARNUNG: Niedrige Evaluation-Episodes ({self.eval_episodes}). "
+                f"Für robuste Statistiken werden ≥100 empfohlen."
+            )
+
+        if fairness_issues:
+            print("\nFairness-Hinweise:")
+            for issue in fairness_issues:
+                print(f"  {issue}")
+        else:
+            print("\n✅ Alle Fairness-Parameter optimal konfiguriert")
+
+        print("=" * 60)
+        print()
+
+
+@dataclass
+class EvaluationResult:
+    """Standardisiertes Ergebnis-Format für alle Algorithmen."""
+    success_rate: float
+    average_steps: float
+    average_reward: float
+    duration: float
+    additional_metrics: Dict[str, Any] = None
+
+
+class AlgorithmEvaluator(ABC):
+    """Abstract Base Class für Algorithmus-Evaluation."""
+
+    def __init__(self, config: ComparisonConfig):
+        self.config = config
+
+    @abstractmethod
+    def evaluate(self, scenario: str, episodes: int, run: int) -> EvaluationResult:
+        """Evaluiert einen trainierten Algorithmus."""
+        pass
+
+    @abstractmethod
+    def is_model_available(self, scenario: str) -> bool:
+        """Prüft ob ein trainiertes Modell verfügbar ist."""
+        pass
+
+    @abstractmethod
+    def get_algorithm_name(self) -> str:
+        """Gibt den Namen des Algorithmus zurück."""
+        pass
+
+
+class QLearningEvaluator(AlgorithmEvaluator):
+    """Evaluator für Q-Learning basierend auf bestehender Infrastruktur."""
+
+    def __init__(self, config: ComparisonConfig):
+        super().__init__(config)
+
+        # Import der bestehenden Q-Learning Module
+        sys.path.append(os.path.join(os.path.dirname(__file__), "../q_learning"))
+        from utils.common import set_all_seeds, obs_to_state, check_success
+        from utils.environment import initialize_environment_for_scenario
+        from utils.qlearning import load_q_table
+        from utils.evaluation import check_loop_detection
+
+        self.set_all_seeds = set_all_seeds
+        self.obs_to_state = obs_to_state
+        self.check_success = check_success
+        self.initialize_environment_for_scenario = initialize_environment_for_scenario
+        self.load_q_table = load_q_table
+        self.check_loop_detection = check_loop_detection
+
+    def get_algorithm_name(self) -> str:
+        return "Q-Learning"
+
+    def is_model_available(self, scenario: str) -> bool:
+        """Prüft ob Q-Table für Szenario existiert."""
+        q_table_path = get_q_table_path(scenario)
+        full_path = os.path.join(os.path.dirname(__file__), "../q_learning", q_table_path)
+        return os.path.exists(full_path)
+
+    def evaluate(self, scenario: str, episodes: int, run: int) -> EvaluationResult:
+        """Evaluiert Q-Learning Policy mit bestehender Infrastruktur."""
+        start_time = time.time()
+
+        # Seed setzen für Reproduzierbarkeit - SYNCHRONISIERT mit DQN
+        seed = self.config.get_seed_for_run(run)
+        self.set_all_seeds()
+        np.random.seed(seed)
+
+        # Szenario-Konfiguration
+        scenario_config = {
+            "env_mode": scenario,
+            "q_table_path": get_q_table_path(scenario),
+            "environment": "container" if scenario == "container" else "grid"
+        }
+
+        # Environment und Q-Table laden
+        env, grid_size = self.initialize_environment_for_scenario(scenario_config)
+        Q = self.load_q_table(scenario)
+
+        if Q is None:
+            raise FileNotFoundError(f"Q-Table für Szenario '{scenario}' nicht gefunden")
+
+        # Evaluation durchführen mit GLEICHEN Parametern wie DQN
+        results = self._run_evaluation_episodes(env, Q, grid_size, scenario, episodes)
+
+        duration = time.time() - start_time
+
+        return EvaluationResult(
+            success_rate=results['success_rate'],
+            average_steps=results['average_steps'],
+            average_reward=results['average_reward'],
+            duration=duration,
+            additional_metrics={
+                'timeout_count': results['timeout_count'],
+                'loop_abort_count': results['loop_abort_count'],
+                'obstacle_count': results['obstacle_count']
+            }
+        )
+
+    def _run_evaluation_episodes(self, env, Q, grid_size, scenario, episodes):
+        """Führt Evaluation-Episoden durch - identisch zu DQN-Evaluation-Logik."""
+        results = {
+            "success_count": 0,
+            "timeout_count": 0,
+            "loop_abort_count": 0,
+            "obstacle_count": 0,
+            "episode_rewards": [],
+            "steps_to_goal": []
+        }
+
+        # Verwendet EVAL_MAX_STEPS aus config.py - IDENTISCH zu DQN
+        max_steps = self.config.max_steps_per_episode
+
+        for episode in range(episodes):
+            obs, _ = env.reset()
+            state = self.obs_to_state(obs, scenario, grid_size)
+            episode_reward = 0
+            steps = 0
+            visited_states = {}
+
+            terminated_by_environment = False
+            while steps < max_steps:
+                action = np.argmax(Q[state])
+                obs, reward, terminated, _, _ = env.step(action)
+                next_state = self.obs_to_state(obs, scenario, grid_size)
+                episode_reward += reward
+                steps += 1
+
+                if self.check_success(reward, scenario):
+                    results["success_count"] += 1
+                    results["steps_to_goal"].append(steps)
+                    break
+
+                if self.check_loop_detection(visited_states, next_state, scenario):
+                    results["loop_abort_count"] += 1
+                    break
+
+                if terminated:
+                    results["obstacle_count"] += 1
+                    terminated_by_environment = True
+                    break
+
+                state = next_state
+            else:
+                if not terminated_by_environment:
+                    results["timeout_count"] += 1
+
+            results["episode_rewards"].append(episode_reward)
+
+        # Metriken berechnen - IDENTISCH zu DQN
+        success_rate = (results["success_count"] / episodes) * 100
+        average_steps = np.mean(results["steps_to_goal"]) if results["steps_to_goal"] else max_steps
+        average_reward = np.mean(results["episode_rewards"])
+
+        return {
+            'success_rate': success_rate,
+            'average_steps': average_steps,
+            'average_reward': average_reward,
+            'timeout_count': results["timeout_count"],
+            'loop_abort_count': results["loop_abort_count"],
+            'obstacle_count': results["obstacle_count"]
+        }
+
+
+class DQNEvaluator(AlgorithmEvaluator):
+    """Evaluator für DQN - verwendet nur Evaluation, kein Training."""
+
+    def __init__(self, config: ComparisonConfig):
+        super().__init__(config)
+
+        # Import der DQN Module
+        from src.dqn.train import DQNTrainer
+        self.DQNTrainer = DQNTrainer
+
+    def get_algorithm_name(self) -> str:
+        return "DQN"
+
+    def is_model_available(self, scenario: str) -> bool:
+        """Prüft ob DQN-Modell für Szenario existiert."""
+        model_path = get_dqn_model_path(scenario)
+        full_path = os.path.join(os.path.dirname(__file__), "../dqn", model_path)
+        return os.path.exists(full_path)
+
+    def evaluate(self, scenario: str, episodes: int, run: int) -> EvaluationResult:
+        """Evaluiert DQN Policy ohne Neutraining."""
+        start_time = time.time()
+
+        # Seed für Reproduzierbarkeit - SYNCHRONISIERT mit Q-Learning
+        seed = self.config.get_seed_for_run(run)
+        np.random.seed(seed)
+
+        # DQN Trainer erstellen (ohne Training)
+        trainer = self.DQNTrainer(env_mode=scenario)
+
+        # Modell laden und evaluieren - verwendet die bestehende evaluate() Methode
+        eval_results = trainer.evaluate(episodes=episodes, load_model=True)
+
+        duration = time.time() - start_time
+
+        return EvaluationResult(
+            success_rate=eval_results['success_rate'],
+            average_steps=eval_results['average_steps'],
+            average_reward=eval_results['average_reward'],
+            duration=duration,
+            additional_metrics={
+                'std_steps': eval_results.get('std_steps', 0),
+                'std_reward': eval_results.get('std_reward', 0),
+                'individual_results': eval_results.get('individual_results', [])
+            }
+        )
+
+
+class FairAlgorithmComparison:
+    """Hauptklasse für fairen Algorithmus-Vergleich mit Clean Code Prinzipien."""
+
+    def __init__(self, config: ComparisonConfig = None):
+        self.config = config or ComparisonConfig()
+
+        # Erstelle Evaluators mit gemeinsamer Config
+        self.evaluators = {
+            "Q-Learning": QLearningEvaluator(self.config),
+            "DQN": DQNEvaluator(self.config)
+        }
+
+    def run_fair_comparison(self, episodes_per_algorithm: Dict[str, int] = None,
+                            num_runs: int = 3) -> Dict[str, Any]:
         """
-        Führt Vergleich zwischen Q-Learning und DQN durch.
+        Führt fairen Vergleich zwischen Algorithmen durch.
 
         Args:
-            episodes_ql: Episoden für Q-Learning
-            episodes_dqn: Episoden für DQN
+            episodes_per_algorithm: Dict mit Episoden pro Algorithmus (für Evaluation)
             num_runs: Anzahl Wiederholungen pro Algorithmus/Szenario
-
-        Returns:
-            Dictionary mit Vergleichsergebnissen
         """
-        if episodes_ql is None:
-            episodes_ql = EPISODES
-        if episodes_dqn is None:
-            episodes_dqn = DQN_EPISODES
+        # Validiere und berichte Konfiguration
+        self.config.validate_and_report_config()
 
+        if episodes_per_algorithm is None:
+            episodes_per_algorithm = {
+                "Q-Learning": self.config.eval_episodes,
+                "DQN": self.config.eval_episodes
+            }
+
+        print("🎯 FAIRER ALGORITHMUS-VERGLEICH")
         print("=" * 80)
-        print("ALGORITHMUS-VERGLEICH: Q-LEARNING vs DEEP Q-LEARNING")
-        print("=" * 80)
-        print(f"Szenarien: {len(self.scenarios)}")
-        print(f"Q-Learning Episoden: {episodes_ql}")
-        print(f"DQN Episoden: {episodes_dqn}")
+        print(f"Algorithmen: {list(self.evaluators.keys())}")
+        print(f"Szenarien: {len(self.config.scenarios)}")
         print(f"Runs pro Algorithmus/Szenario: {num_runs}")
+        print(f"Evaluation Episodes: {episodes_per_algorithm}")
         print()
+
+        # Pre-Check: Sind alle Modelle verfügbar?
+        self._check_model_availability()
 
         all_results = {}
         comparison_data = []
 
-        for scenario in self.scenarios:
+        for scenario in self.config.scenarios:
             print(f"\n{'=' * 60}")
             print(f"SZENARIO: {scenario.upper()}")
             print(f"{'=' * 60}")
 
-            scenario_results = {
-                'Q-Learning': [],
-                'DQN': []
-            }
+            scenario_results = {}
 
-            # Q-Learning Tests
-            print(f"\n{'-' * 30}")
-            print("Q-LEARNING")
-            print(f"{'-' * 30}")
+            for algorithm_name, evaluator in self.evaluators.items():
+                print(f"\n{'-' * 30}")
+                print(f"{algorithm_name.upper()}")
+                print(f"{'-' * 30}")
 
-            for run in range(num_runs):
-                print(f"\nQ-Learning Run {run + 1}/{num_runs}")
-                ql_results = self._run_qlearning(scenario, episodes_ql, run)
-                scenario_results['Q-Learning'].append(ql_results)
+                algorithm_results = []
+                episodes = episodes_per_algorithm.get(algorithm_name, self.config.eval_episodes)
 
-                comparison_data.append({
-                    'algorithm': 'Q-Learning',
-                    'scenario': scenario,
-                    'run': run + 1,
-                    'success_rate': ql_results['success_rate'],
-                    'avg_steps': ql_results['average_steps'],
-                    'avg_reward': ql_results['average_reward'],
-                    'duration_minutes': ql_results['duration'] / 60,
-                    'episodes': episodes_ql
-                })
+                for run in range(num_runs):
+                    print(f"\n{algorithm_name} Run {run + 1}/{num_runs}")
+                    print(f"  Seed: {self.config.get_seed_for_run(run)}")
 
-                print(f"  Erfolgsrate: {ql_results['success_rate']:.1f}%")
-                print(f"  Durchschnittliche Schritte: {ql_results['average_steps']:.1f}")
-                print(f"  Dauer: {ql_results['duration'] / 60:.1f} min")
+                    try:
+                        result = evaluator.evaluate(scenario, episodes, run)
+                        algorithm_results.append(result)
 
-            # DQN Tests
-            print(f"\n{'-' * 30}")
-            print("DEEP Q-LEARNING")
-            print(f"{'-' * 30}")
+                        comparison_data.append({
+                            'algorithm': algorithm_name,
+                            'scenario': scenario,
+                            'run': run + 1,
+                            'seed': self.config.get_seed_for_run(run),
+                            'success_rate': result.success_rate,
+                            'avg_steps': result.average_steps,
+                            'avg_reward': result.average_reward,
+                            'duration_minutes': result.duration / 60,
+                            'episodes': episodes
+                        })
 
-            for run in range(num_runs):
-                print(f"\nDQN Run {run + 1}/{num_runs}")
-                dqn_results = self._run_dqn(scenario, episodes_dqn, run)
-                scenario_results['DQN'].append(dqn_results)
+                        print(f"  Erfolgsrate: {result.success_rate:.1f}%")
+                        print(f"  Durchschnittliche Schritte: {result.average_steps:.1f}")
+                        print(f"  Belohnung: {result.average_reward:.2f}")
+                        print(f"  Dauer: {result.duration / 60:.1f} min")
 
-                comparison_data.append({
-                    'algorithm': 'DQN',
-                    'scenario': scenario,
-                    'run': run + 1,
-                    'success_rate': dqn_results['success_rate'],
-                    'avg_steps': dqn_results['average_steps'],
-                    'avg_reward': dqn_results['average_reward'],
-                    'duration_minutes': dqn_results['duration'] / 60,
-                    'episodes': episodes_dqn
-                })
+                    except Exception as e:
+                        print(f"  ❌ Fehler bei {algorithm_name}: {e}")
+                        continue
 
-                print(f"  Erfolgsrate: {dqn_results['success_rate']:.1f}%")
-                print(f"  Durchschnittliche Schritte: {dqn_results['average_steps']:.1f}")
-                print(f"  Dauer: {dqn_results['duration'] / 60:.1f} min")
+                scenario_results[algorithm_name] = algorithm_results
 
             all_results[scenario] = scenario_results
 
             # Szenario-Vergleich
             self._print_scenario_comparison(scenario, scenario_results)
 
-        # Gesamtvergleich
+        # Gesamtvergleich und Visualisierung
         self._print_overall_comparison(comparison_data)
-
-        # Speichere Ergebnisse
         self._save_comparison_results(all_results, comparison_data)
-
-        # Erstelle Visualisierungen
         self._create_comparison_visualizations(comparison_data)
 
         return {
             'detailed_results': all_results,
-            'comparison_data': comparison_data
+            'comparison_data': comparison_data,
+            'config': self.config
         }
 
-    def _run_qlearning(self, scenario: str, episodes: int, run: int) -> Dict[str, Any]:
-        """
-        Führt Q-Learning für ein Szenario aus.
-        Simuliert Q-Learning Evaluation - in der echten Implementierung
-        würde hier das bestehende Q-Learning Training aufgerufen.
-        """
-        start_time = time.time()
+    def _check_model_availability(self):
+        """Prüft ob alle benötigten Modelle verfügbar sind."""
+        print("🔍 Überprüfe Modell-Verfügbarkeit...")
 
-        # TODO: Hier würde das echte Q-Learning Training aufgerufen
-        # from src.q_learning.train import train_q_learning
-        # results = train_q_learning(scenario, episodes)
+        missing_models = []
+        available_models = []
 
-        # Für Demo-Zwecke: Simulierte Ergebnisse basierend auf typischen Q-Learning Performance
-        np.random.seed(SEED + run)
+        for scenario in self.config.scenarios:
+            for algorithm_name, evaluator in self.evaluators.items():
+                if evaluator.is_model_available(scenario):
+                    available_models.append(f"{algorithm_name}: {scenario}")
+                else:
+                    missing_models.append(f"{algorithm_name}: {scenario}")
 
-        if scenario == 'static':
-            success_rate = np.random.normal(85, 5)  # Q-Learning gut bei statischen Problemen
-            avg_steps = np.random.normal(15, 3)
-            avg_reward = np.random.normal(-5, 2)
-        elif scenario == 'container':
-            success_rate = np.random.normal(70, 8)  # Schwieriger wegen Container-Logik
-            avg_steps = np.random.normal(25, 5)
-            avg_reward = np.random.normal(5, 3)
-        else:  # random scenarios
-            success_rate = np.random.normal(75, 7)  # Mittlere Performance bei Variabilität
-            avg_steps = np.random.normal(20, 4)
-            avg_reward = np.random.normal(-2, 2)
+        if missing_models:
+            print("❌ Fehlende Modelle:")
+            for model in missing_models:
+                print(f"  - {model}")
+            print("\n💡 Verfügbare Modelle:")
+            for model in available_models:
+                print(f"  ✓ {model}")
+            print("\nBitte führen Sie zuerst das Training für fehlende Szenarien durch:")
+            print("  Q-Learning: python src/q_learning/train_all_scenarios.py")
+            print("  DQN: python src/dqn/train_all_scenarios.py")
 
-        # Begrenze Werte
-        success_rate = np.clip(success_rate, 0, 100)
-        avg_steps = np.clip(avg_steps, 5, 50)
+            raise FileNotFoundError("Nicht alle Modelle verfügbar")
 
-        duration = time.time() - start_time + np.random.uniform(30, 90)  # Simulierte Dauer
+        print("✅ Alle Modelle verfügbar")
+        print(f"  Verfügbare Modelle: {len(available_models)}")
+        print()
 
-        return {
-            'success_rate': success_rate,
-            'average_steps': avg_steps,
-            'average_reward': avg_reward,
-            'duration': duration
-        }
-
-    def _run_dqn(self, scenario: str, episodes: int, run: int) -> Dict[str, Any]:
-        """Führt DQN für ein Szenario aus."""
-        start_time = time.time()
-
-        # DQN Trainer erstellen und ausführen
-        trainer = DQNTrainer(env_mode=scenario)
-
-        # Training
-        train_results = trainer.train(episodes=episodes)
-
-        # Evaluation
-        eval_results = trainer.evaluate(episodes=100, load_model=False)
-
-        duration = time.time() - start_time
-
-        return {
-            'success_rate': eval_results['success_rate'],
-            'average_steps': eval_results['average_steps'],
-            'average_reward': eval_results['average_reward'],
-            'duration': duration,
-            'training_results': train_results,
-            'evaluation_results': eval_results
-        }
-
-    def _print_scenario_comparison(self, scenario: str, results: Dict[str, List[Dict]]):
+    def _print_scenario_comparison(self, scenario: str, results: Dict[str, List[EvaluationResult]]):
         """Gibt Vergleich für ein Szenario aus."""
         print(f"\n{'=' * 40}")
         print(f"VERGLEICH {scenario.upper()}")
         print(f"{'=' * 40}")
 
-        for algorithm in self.algorithms:
-            if algorithm in results:
-                algo_results = results[algorithm]
-                success_rates = [r['success_rate'] for r in algo_results]
-                avg_steps = [r['average_steps'] for r in algo_results]
-                avg_rewards = [r['average_reward'] for r in algo_results]
+        for algorithm_name, algorithm_results in results.items():
+            if algorithm_results:
+                success_rates = [r.success_rate for r in algorithm_results]
+                avg_steps = [r.average_steps for r in algorithm_results]
+                avg_rewards = [r.average_reward for r in algorithm_results]
 
-                print(f"\n{algorithm}:")
+                print(f"\n{algorithm_name}:")
                 print(f"  Erfolgsrate: {np.mean(success_rates):.1f}% ± {np.std(success_rates):.1f}%")
                 print(f"  Schritte: {np.mean(avg_steps):.1f} ± {np.std(avg_steps):.1f}")
                 print(f"  Belohnung: {np.mean(avg_rewards):.2f} ± {np.std(avg_rewards):.2f}")
 
         # Direkter Vergleich
-        if 'Q-Learning' in results and 'DQN' in results:
-            ql_success = np.mean([r['success_rate'] for r in results['Q-Learning']])
-            dqn_success = np.mean([r['success_rate'] for r in results['DQN']])
+        algorithms = list(results.keys())
+        if len(algorithms) >= 2 and all(len(results[algo]) > 0 for algo in algorithms):
+            success_rates = {}
+            for algo in algorithms:
+                success_rates[algo] = np.mean([r.success_rate for r in results[algo]])
 
-            winner = "DQN" if dqn_success > ql_success else "Q-Learning"
-            diff = abs(dqn_success - ql_success)
+            winner = max(success_rates, key=success_rates.get)
+            loser = min(success_rates, key=success_rates.get)
+            diff = success_rates[winner] - success_rates[loser]
 
-            print(f"\n🏆 Gewinner: {winner} (+{diff:.1f}% Erfolgsrate)")
+            print(f"\n🏆 Szenario-Gewinner: {winner} (+{diff:.1f}% Erfolgsrate)")
 
     def _print_overall_comparison(self, comparison_data: List[Dict]):
         """Gibt Gesamtvergleich aus."""
@@ -248,11 +497,11 @@ class AlgorithmComparison:
         }).round(2)
 
         # Tabelle
-        print(f"\n{'Algorithmus':<15} {'Szenario':<15} {'Erfolgsrate':<15} {'Schritte':<15} {'Belohnung':<15}")
-        print("-" * 80)
+        print(f"\n{'Algorithmus':<15} {'Szenario':<18} {'Erfolgsrate':<15} {'Schritte':<15} {'Belohnung':<15}")
+        print("-" * 85)
 
-        for algorithm in self.algorithms:
-            for scenario in self.scenarios:
+        for algorithm in ['Q-Learning', 'DQN']:  # Feste Reihenfolge
+            for scenario in self.config.scenarios:
                 if (algorithm, scenario) in grouped.index:
                     success_mean = grouped.loc[(algorithm, scenario), ('success_rate', 'mean')]
                     success_std = grouped.loc[(algorithm, scenario), ('success_rate', 'std')]
@@ -261,12 +510,12 @@ class AlgorithmComparison:
                     reward_mean = grouped.loc[(algorithm, scenario), ('avg_reward', 'mean')]
                     reward_std = grouped.loc[(algorithm, scenario), ('avg_reward', 'std')]
 
-                    print(f"{algorithm:<15} {scenario:<15} {success_mean:>6.1f}±{success_std:>4.1f}% "
+                    print(f"{algorithm:<15} {scenario:<18} {success_mean:>6.1f}±{success_std:>4.1f}% "
                           f"{steps_mean:>6.1f}±{steps_std:>4.1f} {reward_mean:>6.2f}±{reward_std:>4.2f}")
 
         # Algorithmus-Durchschnitte
         print(f"\n{'=' * 60}")
-        print("ALGORITHMUS-DURCHSCHNITTE")
+        print("GESAMTLEISTUNG (Alle Szenarien)")
         print(f"{'=' * 60}")
 
         algo_summary = df.groupby('algorithm').agg({
@@ -275,7 +524,7 @@ class AlgorithmComparison:
             'avg_reward': ['mean', 'std']
         }).round(2)
 
-        for algorithm in self.algorithms:
+        for algorithm in ['Q-Learning', 'DQN']:
             if algorithm in algo_summary.index:
                 print(f"\n{algorithm}:")
                 success_mean = algo_summary.loc[algorithm, ('success_rate', 'mean')]
@@ -289,11 +538,47 @@ class AlgorithmComparison:
                 print(f"  Durchschnittliche Schritte: {steps_mean:.1f} ± {steps_std:.1f}")
                 print(f"  Durchschnittliche Belohnung: {reward_mean:.2f} ± {reward_std:.2f}")
 
+        # Statistischer Vergleich
+        print(f"\n{'=' * 60}")
+        print("🏆 FINALER VERGLEICH")
+        print(f"{'=' * 60}")
+
+        if 'Q-Learning' in df['algorithm'].values and 'DQN' in df['algorithm'].values:
+            ql_data = df[df['algorithm'] == 'Q-Learning']
+            dqn_data = df[df['algorithm'] == 'DQN']
+
+            ql_overall_success = ql_data['success_rate'].mean()
+            dqn_overall_success = dqn_data['success_rate'].mean()
+
+            overall_winner = "DQN" if dqn_overall_success > ql_overall_success else "Q-Learning"
+            difference = abs(dqn_overall_success - ql_overall_success)
+
+            print(f"🥇 GESAMTGEWINNER: {overall_winner}")
+            print(f"   Unterschied: {difference:.1f} Prozentpunkte")
+
+            # Szenario-spezifische Gewinner
+            print(f"\nSzenario-spezifische Gewinner:")
+            scenario_wins = {"Q-Learning": 0, "DQN": 0}
+
+            for scenario in self.config.scenarios:
+                ql_scenario = ql_data[ql_data['scenario'] == scenario]['success_rate'].mean()
+                dqn_scenario = dqn_data[dqn_data['scenario'] == scenario]['success_rate'].mean()
+
+                if not pd.isna(ql_scenario) and not pd.isna(dqn_scenario):
+                    scenario_winner = "DQN" if dqn_scenario > ql_scenario else "Q-Learning"
+                    scenario_diff = abs(dqn_scenario - ql_scenario)
+                    scenario_wins[scenario_winner] += 1
+                    print(f"  {scenario:<18}: {scenario_winner} (+{scenario_diff:.1f}%)")
+
+            print(f"\nSzenarien-Bilanz:")
+            print(f"  Q-Learning: {scenario_wins['Q-Learning']} Szenarien gewonnen")
+            print(f"  DQN: {scenario_wins['DQN']} Szenarien gewonnen")
+
     def _save_comparison_results(self, all_results: Dict, comparison_data: List[Dict]):
         """Speichert Vergleichsergebnisse."""
         # CSV mit allen Daten
         df = pd.DataFrame(comparison_data)
-        csv_path = os.path.join(EXPORT_PATH, 'algorithm_comparison.csv')
+        csv_path = os.path.join(EXPORT_PATH_COMP, 'fair_algorithm_comparison.csv')
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
         df.to_csv(csv_path, index=False)
         print(f"\nVergleichsdaten gespeichert: {csv_path}")
@@ -305,7 +590,7 @@ class AlgorithmComparison:
             'avg_reward': ['mean', 'std', 'min', 'max']
         }).round(3)
 
-        stats_path = os.path.join(EXPORT_PATH, 'algorithm_comparison_stats.csv')
+        stats_path = os.path.join(EXPORT_PATH_COMP, 'fair_algorithm_comparison_stats.csv')
         summary_stats.to_csv(stats_path)
         print(f"Zusammenfassungsstatistiken gespeichert: {stats_path}")
 
@@ -315,10 +600,11 @@ class AlgorithmComparison:
 
         # Hauptvergleichs-Plot
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))
-        fig.suptitle('Q-Learning vs Deep Q-Learning Vergleich', fontsize=16)
+        fig.suptitle('Fair Algorithm Comparison: Q-Learning vs Deep Q-Learning\n(Alle Parameter aus config.py)',
+                     fontsize=16)
 
-        scenarios = self.scenarios
-        algorithms = self.algorithms
+        scenarios = self.config.scenarios
+        algorithms = ['Q-Learning', 'DQN']
 
         x = np.arange(len(scenarios))
         width = 0.35
@@ -429,10 +715,10 @@ class AlgorithmComparison:
         plt.tight_layout()
 
         # Speichern
-        plot_path = os.path.join(EXPORT_PATH, 'algorithm_comparison.pdf')
+        plot_path = os.path.join(EXPORT_PATH_COMP, 'fair_algorithm_comparison.pdf')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
         print(f"Vergleichs-Plot gespeichert: {plot_path}")
-        plt.show()
+        plt.close()
 
         # Zusätzlicher Heatmap-Vergleich
         self._create_heatmap_comparison(df)
@@ -440,10 +726,10 @@ class AlgorithmComparison:
     def _create_heatmap_comparison(self, df: pd.DataFrame):
         """Erstellt Heatmap-Vergleich."""
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-        fig.suptitle('Algorithmus-Performance Heatmap', fontsize=14)
+        fig.suptitle('Algorithmus-Performance Heatmap (Fair Comparison)', fontsize=14)
 
-        scenarios = self.scenarios
-        algorithms = self.algorithms
+        scenarios = self.config.scenarios
+        algorithms = ['Q-Learning', 'DQN']
 
         metrics = ['success_rate', 'avg_steps', 'avg_reward']
         titles = ['Erfolgsrate (%)', 'Durchschnittliche Schritte', 'Durchschnittliche Belohnung']
@@ -483,50 +769,70 @@ class AlgorithmComparison:
         plt.tight_layout()
 
         # Speichern
-        heatmap_path = os.path.join(EXPORT_PATH, 'algorithm_heatmap_comparison.pdf')
+        heatmap_path = os.path.join(EXPORT_PATH_COMP, 'fair_algorithm_heatmap_comparison.pdf')
         plt.savefig(heatmap_path, dpi=300, bbox_inches='tight')
         print(f"Heatmap-Vergleich gespeichert: {heatmap_path}")
-        plt.show()
+        plt.close()
 
 
 def main():
-    """Hauptfunktion für Algorithmus-Vergleich."""
+    """Hauptfunktion für fairen Algorithmus-Vergleich."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Q-Learning vs DQN Vergleich')
-    parser.add_argument('--ql-episodes', type=int, default=None,
-                        help='Episoden für Q-Learning')
-    parser.add_argument('--dqn-episodes', type=int, default=None,
-                        help='Episoden für DQN')
+    parser = argparse.ArgumentParser(description='Fair Q-Learning vs DQN Vergleich')
+    parser.add_argument('--eval-episodes', type=int, default=None,
+                        help='Anzahl Episoden für Evaluation (Standard: aus config.py)')
     parser.add_argument('--runs', type=int, default=3,
                         help='Anzahl Wiederholungen pro Algorithmus/Szenario')
     parser.add_argument('--scenarios', nargs='+',
                         choices=['static', 'random_start', 'random_goal', 'random_obstacles', 'container'],
-                        help='Spezifische Szenarien (default: alle)')
+                        help='Spezifische Szenarien (Standard: alle)')
+    parser.add_argument('--algorithms', nargs='+',
+                        choices=['qlearning', 'dqn'], default=['qlearning', 'dqn'],
+                        help='Algorithmen für Vergleich')
 
     args = parser.parse_args()
 
-    # Comparison erstellen
-    comparison = AlgorithmComparison()
+    # Config erstellen
+    config = ComparisonConfig()
 
     # Szenarien filtern falls spezifiziert
     if args.scenarios:
-        comparison.scenarios = args.scenarios
+        config.scenarios = args.scenarios
         print(f"Ausgewählte Szenarien: {args.scenarios}")
 
-    # Vergleich starten
+    # Episodes konfigurieren
+    episodes_config = {}
+    if args.eval_episodes:
+        episodes_config["Q-Learning"] = args.eval_episodes
+        episodes_config["DQN"] = args.eval_episodes
+
+    # Comparison erstellen und ausführen
+    comparison = FairAlgorithmComparison(config)
+
+    # Filter Evaluators basierend auf Argumenten
+    if set(args.algorithms) != {'qlearning', 'dqn'}:
+        filtered_evaluators = {}
+        if 'qlearning' in args.algorithms:
+            filtered_evaluators["Q-Learning"] = comparison.evaluators["Q-Learning"]
+        if 'dqn' in args.algorithms:
+            filtered_evaluators["DQN"] = comparison.evaluators["DQN"]
+        comparison.evaluators = filtered_evaluators
+
     start_time = time.time()
-    results = comparison.run_comparison(
-        episodes_ql=args.ql_episodes,
-        episodes_dqn=args.dqn_episodes,
+    results = comparison.run_fair_comparison(
+        episodes_per_algorithm=episodes_config,
         num_runs=args.runs
     )
     total_time = time.time() - start_time
 
     print(f"\n{'=' * 80}")
-    print("VERGLEICH ABGESCHLOSSEN")
+    print("✅ FAIRER VERGLEICH ABGESCHLOSSEN")
     print(f"{'=' * 80}")
-    print(f"Gesamtdauer: {total_time / 3600:.1f} Stunden")
+    print(f"Gesamtdauer: {total_time / 60:.1f} Minuten")
+    print(f"Konfiguration: Alle Parameter aus config.py")
+    print(f"Reproduzierbarkeit: Base Seed {config.base_seed} + Run-Offset")
+    print(f"Datensicherheit: Nur Evaluation trainierter Modelle")
 
     return results
 

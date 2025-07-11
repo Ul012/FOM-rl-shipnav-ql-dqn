@@ -18,7 +18,7 @@ from src.shared.config import (
     MAX_STEPS,
     EVAL_EPISODES,
     get_dqn_model_path,
-    EXPORT_PATH,
+    EXPORT_PATH_DQN,
     SEED
 )
 
@@ -364,7 +364,7 @@ def main():
 
         # Plots erstellen
         if not args.no_plot:
-            plot_path = os.path.join(EXPORT_PATH, f'dqn_training_{args.mode}.pdf')
+            plot_path = os.path.join(EXPORT_PATH_DQN, f'dqn_training_{args.mode}.pdf')
             os.makedirs(os.path.dirname(plot_path), exist_ok=True)
             trainer.plot_training_results(train_results, plot_path)
 

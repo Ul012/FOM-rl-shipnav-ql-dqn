@@ -4,13 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
-from src.shared.config import EXPORT_PDF, EXPORT_PATH
+from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
 
 
 # Erstellung des Export-Ordners
 def setup_export():
     if EXPORT_PDF:
-        Path(EXPORT_PATH).mkdir(exist_ok=True)
+        Path(EXPORT_PATH_QL).mkdir(exist_ok=True)
 
 
 # ============================================================================
@@ -21,7 +21,7 @@ def setup_export():
 def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=True):
     import matplotlib.pyplot as plt
     import numpy as np
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH
+    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
 
     plt.figure(figsize=(12, 6))
 
@@ -43,7 +43,7 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
 
     # PDF Export
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH}/train_learning_curve_{env_mode}.pdf"
+        filename = f"{EXPORT_PATH_QL}/train_learning_curve_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Learning Curve gespeichert: {filename}")
 
@@ -57,7 +57,7 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
 def create_success_curve(success_per_episode, env_mode, show=True):
     import matplotlib.pyplot as plt
     import numpy as np
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH, EPISODES
+    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL, EPISODES
 
     plt.figure(figsize=(12, 4))
     plt.plot(success_per_episode, label="Ziel erreicht", color='green', alpha=0.7, linewidth=1)
@@ -78,7 +78,7 @@ def create_success_curve(success_per_episode, env_mode, show=True):
 
     # PDF Export
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH}/train_success_curve_{env_mode}.pdf"
+        filename = f"{EXPORT_PATH_QL}/train_success_curve_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Success Curve gespeichert: {filename}")
 
@@ -91,7 +91,7 @@ def create_success_curve(success_per_episode, env_mode, show=True):
 # Erstellung der Trainingsstatistiken
 def create_training_statistics(rewards_per_episode, success_per_episode, env_mode, show=True):
     import matplotlib.pyplot as plt
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH
+    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
     import numpy as np
 
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
@@ -141,7 +141,7 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
 
     # PDF Export
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH}/train_statistics_{env_mode}.pdf"
+        filename = f"{EXPORT_PATH_QL}/train_statistics_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Training Statistics gespeichert: {filename}")
 
@@ -182,8 +182,8 @@ def create_success_plot(results_solved, env_mode):
 
     # PDF Export
     if EXPORT_PDF:
-        plt.savefig(f"{EXPORT_PATH}/evaluate_policy_success_rate.pdf", format='pdf', bbox_inches='tight')
-        print(f"Success Rate Plot gespeichert: {EXPORT_PATH}/evaluate_policy_success_rate.pdf")
+        plt.savefig(f"{EXPORT_PATH_QL}/evaluate_policy_success_rate.pdf", format='pdf', bbox_inches='tight')
+        print(f"Success Rate Plot gespeichert: {EXPORT_PATH_QL}/evaluate_policy_success_rate.pdf")
 
     plt.show()
 
@@ -204,8 +204,8 @@ def create_reward_histogram(rewards_all, env_mode):
 
     # PDF Export
     if EXPORT_PDF:
-        plt.savefig(f"{EXPORT_PATH}/evaluate_policy_reward_histogram.pdf", format='pdf', bbox_inches='tight')
-        print(f"Reward Histogram gespeichert: {EXPORT_PATH}/evaluate_policy_reward_histogram.pdf")
+        plt.savefig(f"{EXPORT_PATH_QL}/evaluate_policy_reward_histogram.pdf", format='pdf', bbox_inches='tight')
+        print(f"Reward Histogram gespeichert: {EXPORT_PATH_QL}/evaluate_policy_reward_histogram.pdf")
 
     plt.show()
 
@@ -261,7 +261,7 @@ def create_success_rate_comparison(all_metrics):
     plt.tight_layout()
 
     if EXPORT_PDF:
-        plt.savefig(f"{EXPORT_PATH}/success_rates.pdf", format='pdf', bbox_inches='tight')
+        plt.savefig(f"{EXPORT_PATH_QL}/success_rates.pdf", format='pdf', bbox_inches='tight')
     plt.show()
 
 
@@ -304,5 +304,5 @@ def create_stacked_failure_chart(all_metrics):
     plt.tight_layout()
 
     if EXPORT_PDF:
-        plt.savefig(f"{EXPORT_PATH}/failure_modes.pdf", format='pdf', bbox_inches='tight')
+        plt.savefig(f"{EXPORT_PATH_QL}/failure_modes.pdf", format='pdf', bbox_inches='tight')
     plt.show()

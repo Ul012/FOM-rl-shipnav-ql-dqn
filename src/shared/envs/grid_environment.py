@@ -44,7 +44,7 @@ class GridEnvironment(gym.Env):
         self.visited_states = {}
         self.current_steps = 0
 
-        # Standard-Layout aus config_ql.py
+        # Standard-Layout aus legacy_config_ql.py
         self.start_pos = DEFAULT_START_POS
         self.goal_pos = DEFAULT_GOAL_POS
         self.obstacles = DEFAULT_OBSTACLES

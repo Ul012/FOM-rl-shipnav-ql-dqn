@@ -3,7 +3,7 @@
 import random
 import numpy as np
 from pathlib import Path
-from src.shared.config import SEED, EXPORT_PDF, EXPORT_PATH, GRID_SIZE
+from src.shared.config import SEED, EXPORT_PDF, EXPORT_PATH_QL, GRID_SIZE
 
 
 # Seed-Konfiguration für Reproduzierbarkeit
@@ -38,4 +38,4 @@ def check_success(reward, env_mode):
 # Erstellung des Export-Ordners
 def setup_export():
     if EXPORT_PDF:
-        Path(EXPORT_PATH).mkdir(exist_ok=True)
+        Path(EXPORT_PATH_QL).mkdir(exist_ok=True)

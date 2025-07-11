@@ -1,7 +1,7 @@
 # utils/reporting.py
 
 import numpy as np
-from src.shared.config import EPISODES, ENV_MODE, ALPHA, GAMMA, EPSILON, SEED, EXPORT_PDF, EXPORT_PATH
+from src.shared.config import EPISODES, ENV_MODE, ALPHA, GAMMA, EPSILON, SEED, EXPORT_PDF, EXPORT_PATH_QL
 
 
 # Ausgabe der Trainingsergebnisse
@@ -44,7 +44,7 @@ def print_training_results(rewards_per_episode, success_per_episode, steps_per_e
     print(f"  Seed: {SEED}")
 
     if EXPORT_PDF:
-        print(f"\nPDF-Exports gespeichert in: {EXPORT_PATH}")
+        print(f"\nPDF-Exports gespeichert in: {EXPORT_PATH_QL}")
 
 
 # Ausgabe der Evaluationsergebnisse
@@ -74,4 +74,4 @@ def print_evaluation_results(results_cause, results_solved, rewards_all, episode
     print(f"  Median: {np.median(rewards_all):.2f}")
 
     if EXPORT_PDF:
-        print(f"\nPDF-Exports gespeichert in: {EXPORT_PATH}")
+        print(f"\nPDF-Exports gespeichert in: {EXPORT_PATH_QL}")

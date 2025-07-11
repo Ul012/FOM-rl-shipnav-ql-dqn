@@ -56,7 +56,7 @@ Run 1:
   Evaluation Success Rate: 24.0%
   Average Steps: 8.8
   Average Reward: -13.72
-  Duration: 0.4 minutes
+  Duration: 0.3 minutes
 
 Run 2:
   Training Success Rate: 19.6%
@@ -70,7 +70,7 @@ Run 3:
   Evaluation Success Rate: 24.0%
   Average Steps: 8.8
   Average Reward: -13.72
-  Duration: 0.4 minutes
+  Duration: 0.3 minutes
 
 
 SCENARIO: RANDOM_OBSTACLES
@@ -80,7 +80,7 @@ Run 1:
   Evaluation Success Rate: 32.0%
   Average Steps: 5.0
   Average Reward: -8.30
-  Duration: 0.3 minutes
+  Duration: 0.2 minutes
 
 Run 2:
   Training Success Rate: 17.6%

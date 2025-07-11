@@ -126,10 +126,10 @@ python train.py --mode static --eval-only
 cd src/comparison
 
 # Vollständiger Vergleich beider Algorithmen
-python compare_algorithms.py --runs 5
+python legacy_compare_algorithms.py --runs 5
 
 # Schneller Test-Vergleich
-python compare_algorithms.py --ql-episodes 100 --dqn-episodes 100 --runs 2
+python legacy_compare_algorithms.py --ql-episodes 100 --dqn-episodes 100 --runs 2
 ```
 
 ### Konfiguration anpassen

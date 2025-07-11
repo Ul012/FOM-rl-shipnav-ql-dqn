@@ -1,11 +1,15 @@
 # config.py - Erweiterte Version für Q-Learning und DQN
 
+import os
+from pathlib import Path
+
 # ============================================================================
 # Basis-Parameter
 # ============================================================================
 
 # Grid Constants
 GRID_SIZE = 5
+SEED = 42 # Reproduzierbarkeit
 
 # Aktionen (Richtungen)
 ACTIONS = {
@@ -26,11 +30,10 @@ CONTAINER_START_POS = (0, 0)
 CONTAINER_OBSTACLES = [(1, 3), (1, 2), (3, 1)]
 
 # ============================================================================
-# Umgebungskonfiguration
+# Umgebungskonfiguration (Q-Learning + DQN)
 # ============================================================================
 
 ENV_MODE = "static"  # Optionen: static, random_start, random_goal, random_obstacles, container
-SEED = 42  # Random seed für Reproduzierbarkeit
 
 # ============================================================================
 # Rewardsystem
@@ -125,7 +128,15 @@ DPI_SETTING = 100  # Auflösung für gespeicherte Plots
 # ============================================================================
 
 EXPORT_PDF = True  # PDF-Export für Visualisierungen
-EXPORT_PATH = "../dqn/exports/"  # Pfad für exportierte Dateien
+
+# Spezifische Export-Pfade (selbsterklärend)
+EXPORT_PATH_DQN = os.path.join(os.path.dirname(__file__), "..", "dqn", "exports")
+EXPORT_PATH_QL = os.path.join(os.path.dirname(__file__), "..", "q_learning", "exports")
+EXPORT_PATH_COMP = os.path.join(os.path.dirname(__file__), "..", "comparison", "exports")
+
+# Erstelle Export-Verzeichnisse beim Import
+for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:
+    os.makedirs(_path, exist_ok=True)
 
 # ============================================================================
 # Debug Parameter

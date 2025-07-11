@@ -10,7 +10,7 @@ from typing import Dict, List, Any
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.dqn.train import DQNTrainer
-from src.shared.config import DQN_EPISODES, EXPORT_PATH
+from src.shared.config import DQN_EPISODES, EXPORT_PATH_DQN
 
 
 class DQNScenarioRunner:
@@ -105,7 +105,7 @@ class DQNScenarioRunner:
                 print(f"Dauer: {run_results['duration'] / 60:.1f} Minuten")
 
                 # Plot für diesen Run erstellen
-                plot_path = os.path.join(EXPORT_PATH, f'dqn_training_{scenario}_run{run + 1}.pdf')
+                plot_path = os.path.join(EXPORT_PATH_DQN, f'dqn_training_{scenario}_run{run + 1}.pdf')
                 os.makedirs(os.path.dirname(plot_path), exist_ok=True)
                 trainer.plot_training_results(train_results, plot_path)
 
@@ -198,13 +198,13 @@ class DQNScenarioRunner:
         """Speichert Ergebnisse in Dateien."""
         # CSV mit Zusammenfassung
         df = pd.DataFrame(summary_data)
-        csv_path = os.path.join(EXPORT_PATH, 'dqn_all_scenarios_summary.csv')
+        csv_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_summary.csv')
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
         df.to_csv(csv_path, index=False)
         print(f"\nZusammenfassung gespeichert: {csv_path}")
 
         # Detaillierte Statistiken
-        stats_path = os.path.join(EXPORT_PATH, 'dqn_all_scenarios_stats.txt')
+        stats_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_stats.txt')
         with open(stats_path, 'w') as f:
             f.write("DQN ALL SCENARIOS STATISTICS\n")
             f.write("=" * 50 + "\n\n")
@@ -307,7 +307,7 @@ class DQNScenarioRunner:
         plt.tight_layout()
 
         # Speichern
-        plot_path = os.path.join(EXPORT_PATH, 'dqn_all_scenarios_comparison.pdf')
+        plot_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_comparison.pdf')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
         print(f"Vergleichs-Plot gespeichert: {plot_path}")
 #       plt.show() # alle Visualisierungen werden interaktiv angezeigt
