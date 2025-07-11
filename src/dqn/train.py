@@ -13,7 +13,7 @@ from src.dqn.deep_q_agent import DeepQLearningAgent
 from src.shared.envs.grid_environment import GridEnvironment
 from src.shared.envs.container_environment import ContainerShipEnv
 from src.shared.config import (
-    DQN_EPISODES,
+    EPISODES,
     MAX_STEPS,
     EVAL_EPISODES,
     EXPORT_PATH_DQN,
@@ -61,7 +61,7 @@ class DQNTrainer:
             Dictionary mit Training-Ergebnissen
         """
         if episodes is None:
-            episodes = DQN_EPISODES
+            episodes = EPISODES
 
         print(f"\nStarte DQN Training...")
         print(f"Modus: {self.env_mode}")

@@ -10,7 +10,7 @@ from typing import Dict, List, Any
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.dqn.train import DQNTrainer
-from src.shared.config import DQN_EPISODES, EXPORT_PATH_DQN
+from src.shared.config import EPISODES, EXPORT_PATH_DQN
 
 
 class DQNScenarioRunner:

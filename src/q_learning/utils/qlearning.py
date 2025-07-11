@@ -1,7 +1,7 @@
 # utils/qlearning.py
 
 import numpy as np
-from src.shared.config import ALPHA, GAMMA, ENV_MODE, N_ACTIONS
+from src.shared.config import QL_ALPHA, GAMMA, ENV_MODE, N_ACTIONS
 
 # Initialisierung der Q-Tabelle
 def initialize_q_table(env):
@@ -19,7 +19,7 @@ def select_action(Q, state, epsilon, n_actions=N_ACTIONS):
         return np.argmax(Q[state])
 
 # Q-Wert Update (Q-Learning)
-def update_q_value(Q, state, action, reward, next_state, alpha=ALPHA, gamma=GAMMA):
+def update_q_value(Q, state, action, reward, next_state, alpha=QL_ALPHA, gamma=GAMMA):
     Q[state, action] += alpha * (reward + gamma * np.max(Q[next_state]) - Q[state, action])
 
 # Speicherung der Q-Tabelle
@@ -29,8 +29,7 @@ def save_q_table(Q, env_mode=ENV_MODE):
     print(f"Q-Tabelle gespeichert: {filepath}")
 
 # Laden der Q-Tabelle
-def load_q_table(env_mode=ENV_MODE):
-    filepath = f"q_table_{env_mode}.npy"
+def load_q_table(filepath):
     try:
         Q = np.load(filepath)
         print(f"Q-Tabelle geladen: {filepath}")

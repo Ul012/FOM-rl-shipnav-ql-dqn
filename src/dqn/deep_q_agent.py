@@ -57,8 +57,13 @@ class DeepQLearningAgent:
         self.learning_rate = config['learning_rate']
         self.discount_factor = config['discount_factor']
         self.exploration_rate = config['exploration_rate']
-        self.exploration_decay = config['exploration_decay']
-        self.min_exploration_rate = config['min_exploration_rate']
+
+        # Neue Epsilon-Handling
+        self.use_epsilon_decay = config.get('use_epsilon_decay', False)
+        if self.use_epsilon_decay:
+            self.exploration_decay = config['exploration_decay']
+            self.min_exploration_rate = config['min_exploration_rate']
+
         self.batch_size = config['batch_size']
         self.target_update_freq = config['target_update_freq']
         self.buffer_size = config['buffer_size']
@@ -254,10 +259,12 @@ class DeepQLearningAgent:
 
     def decay_exploration(self):
         """Reduziert die Explorationsrate."""
-        self.exploration_rate = max(
-            self.min_exploration_rate,
-            self.exploration_rate * self.exploration_decay
-        )
+        if self.use_epsilon_decay:
+            self.exploration_rate = max(
+                self.min_exploration_rate,
+                self.exploration_rate * self.exploration_decay
+            )
+        # Wenn use_epsilon_decay=False, bleibt exploration_rate konstant
 
     def episode_finished(self, success: bool, steps: int, total_reward: float):
         """Wird am Ende jeder Episode aufgerufen."""

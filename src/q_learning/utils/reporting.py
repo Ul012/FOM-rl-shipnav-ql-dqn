@@ -1,7 +1,7 @@
 # utils/reporting.py
 
 import numpy as np
-from src.shared.config import EPISODES, ENV_MODE, ALPHA, GAMMA, EPSILON, SEED, EXPORT_PDF, EXPORT_PATH_QL
+from src.shared.config import EPISODES, ENV_MODE, QL_ALPHA, GAMMA, QL_EPSILON_FIXED, SEED, EXPORT_PDF, EXPORT_PATH_QL
 
 
 # Ausgabe der Trainingsergebnisse
@@ -38,9 +38,9 @@ def print_training_results(rewards_per_episode, success_per_episode, steps_per_e
     print(f"  Maximum: {max(steps_per_episode)}")
 
     print(f"\nHyperparameter:")
-    print(f"  Lernrate (α): {ALPHA}")
+    print(f"  Lernrate (α): {QL_ALPHA}")
     print(f"  Discount Factor (γ): {GAMMA}")
-    print(f"  Epsilon (ε): {EPSILON}")
+    print(f"  Epsilon (ε): {QL_EPSILON_FIXED}")
     print(f"  Seed: {SEED}")
 
     if EXPORT_PDF:

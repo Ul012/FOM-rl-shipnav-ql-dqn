@@ -16,8 +16,8 @@ import time
 
 # Lokale Module
 from src.shared.config import (ENV_MODE, MAX_STEPS, CELL_SIZE, FRAME_DELAY, EXPORT_PDF, EXPORT_PATH_QL, REWARDS)
-from shared.envs.grid_environment import GridEnvironment
-from shared.envs.container_environment import ContainerShipEnv
+from src.shared.envs.grid_environment import GridEnvironment
+from src.shared.envs.container_environment import ContainerShipEnv
 
 # Utils
 from utils.common import set_all_seeds, obs_to_state, setup_export
@@ -87,7 +87,7 @@ def draw_grid(screen, font, env, agent_pos, Q):
 # Speicherung des Screenshots
 def save_screenshot(screen):
     if EXPORT_PDF:
-        screenshot_path = f"{EXPORT_PATH}/agent_final_position.png"
+        screenshot_path = f"{EXPORT_PATH_QL}/agent_final_position.png"
         pygame.image.save(screen, screenshot_path)
         print(f"Screenshot gespeichert: {screenshot_path}")
 
@@ -105,10 +105,10 @@ def run_agent():
 
     # Initialisierung
     env = ContainerShipEnv() if ENV_MODE == "container" else GridEnvironment(mode=ENV_MODE)
-    Q = load_q_table(ENV_MODE)
+    Q = load_q_table(f"q_table_{ENV_MODE}.npy")
 
     if Q is None:
-        print(f"FEHLER: Q-Tabelle nicht gefunden: {Q_TABLE_PATH}")
+        print(f"FEHLER: Q-Tabelle nicht gefunden: q_table_{ENV_MODE}.npy")
         print("Bitte führen Sie zuerst das Training aus.")
         sys.exit(1)
 

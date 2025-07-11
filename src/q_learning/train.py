@@ -18,14 +18,15 @@ if ENV_MODE is None:
     ENV_MODE = CONFIG_ENV_MODE
 
 # Lokale Module
-from src.shared.config import EPISODES, MAX_STEPS, EPSILON, ALPHA, GAMMA, SEED
+from src.shared.config import EPISODES, MAX_STEPS
+from src.shared.config_utils import get_q_learning_config
 
 # Utils
-from utils.common import set_all_seeds, obs_to_state, check_success, setup_export
-from utils.environment import initialize_environment
-from utils.qlearning import initialize_q_table, select_action, update_q_value, save_q_table
-from utils.visualization import create_learning_curve, create_success_curve, create_training_statistics
-from utils.reporting import print_training_results
+from src.q_learning.utils.common import set_all_seeds, obs_to_state, check_success, setup_export
+from src.q_learning.utils.environment import initialize_environment
+from src.q_learning.utils.qlearning import initialize_q_table, select_action, update_q_value, save_q_table
+from src.q_learning.utils.visualization import create_learning_curve, create_success_curve, create_training_statistics
+from src.q_learning.utils.reporting import print_training_results
 
 SHOW_VISUALIZATIONS = os.getenv("SHOW_VISUALIZATIONS", "true").lower() == "true"
 
@@ -42,18 +43,31 @@ def train_agent(scenario):
     Q, n_states, n_actions = initialize_q_table(env)
     setup_export()
 
+    # Q-Learning Konfiguration laden
+    ql_config = get_q_learning_config()
+
+    # Epsilon-Handling basierend auf Konfiguration
+    if ql_config['use_epsilon_decay']:
+        current_epsilon = ql_config['epsilon_start']
+        epsilon_end = ql_config['epsilon_end']
+        epsilon_decay = ql_config['epsilon_decay']
+        use_decay = True
+        print(f"Epsilon Decay: {current_epsilon} → {epsilon_end} (decay: {epsilon_decay})")
+    else:
+        current_epsilon = ql_config['epsilon']
+        use_decay = False
+        print(f"Festes Epsilon: {current_epsilon}")
+
     # Tracking-Listen
     rewards_per_episode = []
     success_per_episode = []
     steps_per_episode = []
 
     print(f"Starte Training mit {EPISODES} Episoden...")
-    print(f"Episodes: {EPISODES}")
     print("Hyperparameter:")
-    print(f"  Lernrate (α): {ALPHA}")
-    print(f"  Discount Factor (γ): {GAMMA}")
-    print(f"  Epsilon (ε): {EPSILON}")
-    print(f"  Seed: {SEED}")
+    print(f"  Lernrate (α): {ql_config['alpha']}")
+    print(f"  Discount Factor (γ): {ql_config['gamma']}")
+    print(f"  Seed: {ql_config['seed']}")
 
     for episode in range(EPISODES):
         obs, _ = env.reset()
@@ -63,7 +77,7 @@ def train_agent(scenario):
         success = False
 
         for step in range(MAX_STEPS):
-            action = select_action(Q, state, EPSILON, n_actions)
+            action = select_action(Q, state, current_epsilon, n_actions)
             obs, reward, terminated, truncated, _ = env.step(action)
             next_state = obs_to_state(obs, ENV_MODE, grid_size)
             done = terminated or truncated
@@ -79,6 +93,10 @@ def train_agent(scenario):
 
             if done:
                 break
+
+        # Nach jeder Episode: Epsilon decay (falls aktiviert)
+        if use_decay:
+            current_epsilon = max(epsilon_end, current_epsilon * epsilon_decay)
 
         rewards_per_episode.append(total_reward)
         success_per_episode.append(1 if success else 0)
