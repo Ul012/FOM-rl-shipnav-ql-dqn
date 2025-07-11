@@ -211,7 +211,7 @@ def create_reward_histogram(rewards_all, env_mode):
 
 
 # ============================================================================
-# Comparison Visualizations (aus compare_scenarios.py)
+# Comparison Visualizations (aus legacy_compare_scenarios.py)
 # ============================================================================
 
 # Erstellung der Vergleichstabelle
