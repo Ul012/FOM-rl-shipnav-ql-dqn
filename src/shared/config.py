@@ -86,7 +86,6 @@ DQN_HIDDEN_SIZE = 128  # Hidden layer size
 DQN_LEARNING_RATE = 0.001  # Learning rate for neural network
 
 # Training Parameters
-DQN_EPISODES = 500  # Training episodes
 DQN_BATCH_SIZE = 32  # Batch size for experience replay
 DQN_BUFFER_SIZE = 5000  # Experience replay buffer size
 DQN_TARGET_UPDATE_FREQ = 100  # Target network update frequency
@@ -95,18 +94,6 @@ DQN_TARGET_UPDATE_FREQ = 100  # Target network update frequency
 # Verwendet abhängig von USE_EPSILON_DECAY:
 # - False: DQN_EPSILON_FIXED (konstant)
 # - True: EPSILON_START → EPSILON_END mit EPSILON_DECAY
-
-# ============================================================================
-# KOMPATIBILITÄTS-ALIASE (für bestehenden Code)
-# ============================================================================
-
-# Alte Namen für Rückwärtskompatibilität - DEPRECATED
-ALPHA = QL_ALPHA  # DEPRECATED: Verwende QL_ALPHA
-EPSILON = QL_EPSILON_FIXED  # DEPRECATED: Verwende QL_EPSILON_FIXED
-DQN_EPISODES = EPISODES  # DEPRECATED: Beide verwenden EPISODES
-DQN_EPSILON_START = EPSILON_START  # DEPRECATED: Verwende EPSILON_START
-DQN_EPSILON_END = EPSILON_END  # DEPRECATED: Verwende EPSILON_END
-DQN_EPSILON_DECAY = EPSILON_DECAY  # DEPRECATED: Verwende EPSILON_DECAY
 
 # ============================================================================
 # DATEIPFADE UND VERZEICHNISSE

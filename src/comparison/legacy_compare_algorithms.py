@@ -12,7 +12,7 @@ from typing import Dict, List, Any, Tuple
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.dqn.train import DQNTrainer
-from src.shared.config import EPISODES, DQN_EPISODES, EXPORT_PATH_COMP, SEED
+from src.shared.config import EPISODES, EXPORT_PATH_COMP, SEED
 
 
 class AlgorithmComparison:
@@ -45,7 +45,7 @@ class AlgorithmComparison:
         if episodes_ql is None:
             episodes_ql = EPISODES
         if episodes_dqn is None:
-            episodes_dqn = DQN_EPISODES
+            episodes_dqn = EPISODES
 
         print("=" * 80)
         print("ALGORITHMUS-VERGLEICH: Q-LEARNING vs DEEP Q-LEARNING")

@@ -1,4 +1,4 @@
-# src/comparison/fair_algorithm_comparison.py
+# src/comparison/algorithm_comparison.py
 
 import sys
 import os
@@ -16,10 +16,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 # ZENTRALE CONFIG - Alle Parameter stammen aus der gemeinsamen config.py
 from src.shared.config import (
-    SEED, EPISODES, DQN_EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, MAX_STEPS,
-    EXPORT_PATH_COMP, Q_TABLE_PATH_TEMPLATE, DQN_MODEL_PATH_TEMPLATE,
-    GAMMA, ALPHA, EPSILON,  # Q-Learning Parameter
-    DQN_LEARNING_RATE, EPSILON_START, EPSILON_END, EPSILON_DECAY  # Gemeinsame Epsilon Parameter
+    SEED, EPISODES, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, MAX_STEPS,
+    EXPORT_PATH_COMP,
+    GAMMA, QL_ALPHA, QL_EPSILON_FIXED,  # Q-Learning Parameter
+    DQN_EPSILON_FIXED, DQN_LEARNING_RATE, # DQN Parameter
+    EPSILON_START, EPSILON_END, EPSILON_DECAY  # Gemeinsame Epsilon Parameter
 )
 
 from src.shared.config_utils import get_dqn_model_path, get_q_table_path
@@ -36,7 +37,7 @@ class ComparisonConfig:
 
     # Episodes aus config.py
     q_learning_episodes: int = EPISODES
-    dqn_episodes: int = DQN_EPISODES
+    dqn_episodes: int = EPISODES
 
     # Szenarien
     scenarios: List[str] = None
@@ -57,6 +58,12 @@ class ComparisonConfig:
 
     def validate_and_report_config(self):
         """Validiert und berichtet über die verwendete Konfiguration."""
+        # Import der benötigten Variablen in der Methode
+        from src.shared.config import (
+            USE_EPSILON_DECAY, QL_EPSILON_FIXED, DQN_EPSILON_FIXED,
+            EPSILON_START, EPSILON_END, EPSILON_DECAY
+        )
+
         print("🔧 FAIRNESS-KONFIGURATION (aus config.py)")
         print("=" * 60)
         print(f"Basis-Seed: {self.base_seed}")
@@ -69,9 +76,15 @@ class ComparisonConfig:
         print()
         print("Hyperparameter-Synchronisation:")
         print(f"  Discount Factor (γ): {GAMMA} (beide Algorithmen)")
-        print(f"  Q-Learning α: {ALPHA}, ε: {EPSILON}")
+        print(f"  Q-Learning α: {QL_ALPHA}, ε: {QL_EPSILON_FIXED}")
         print(f"  DQN Learning Rate: {DQN_LEARNING_RATE}")
-        print(f"  DQN ε: {DQN_EPSILON_START} → {DQN_EPSILON_END} (decay: {DQN_EPSILON_DECAY})")
+
+        # Korrekte Epsilon-Ausgabe basierend auf USE_EPSILON_DECAY
+        if USE_EPSILON_DECAY:
+            print(f"  DQN ε: {EPSILON_START} → {EPSILON_END} (decay: {EPSILON_DECAY})")
+        else:
+            print(f"  DQN ε: {DQN_EPSILON_FIXED} (fest)")
+
         print()
         print(f"Szenarien: {self.scenarios}")
 
@@ -88,6 +101,13 @@ class ComparisonConfig:
             fairness_issues.append(
                 f"⚠️  WARNUNG: Niedrige Evaluation-Episodes ({self.eval_episodes}). "
                 f"Für robuste Statistiken werden ≥100 empfohlen."
+            )
+
+        # Zusätzlicher Fairness-Check für Epsilon-Werte
+        if not USE_EPSILON_DECAY and QL_EPSILON_FIXED != DQN_EPSILON_FIXED:
+            fairness_issues.append(
+                f"⚠️  WARNUNG: Unterschiedliche Epsilon-Werte "
+                f"(Q-Learning: {QL_EPSILON_FIXED}, DQN: {DQN_EPSILON_FIXED})"
             )
 
         if fairness_issues:
@@ -180,7 +200,9 @@ class QLearningEvaluator(AlgorithmEvaluator):
 
         # Environment und Q-Table laden
         env, grid_size = self.initialize_environment_for_scenario(scenario_config)
-        Q = self.load_q_table(scenario)
+        q_table_path = get_q_table_path(scenario)
+        q_table_full_path = os.path.join(os.path.dirname(__file__), "../q_learning", q_table_path)
+        Q = self.load_q_table(q_table_full_path)
 
         if Q is None:
             raise FileNotFoundError(f"Q-Table für Szenario '{scenario}' nicht gefunden")
@@ -689,7 +711,7 @@ class FairAlgorithmComparison:
         # Box Plots für detaillierte Verteilungen
         # Success Rate Distribution
         success_data = [df[df['algorithm'] == algo]['success_rate'].values for algo in algorithms]
-        bp1 = axes[1, 0].boxplot(success_data, labels=algorithms, patch_artist=True)
+        bp1 = axes[1, 0].boxplot(success_data, tick_labels=algorithms, patch_artist=True)
         for patch, color in zip(bp1['boxes'], [colors[algo] for algo in algorithms]):
             patch.set_facecolor(color)
         axes[1, 0].set_title('Erfolgsrate Verteilung')
@@ -698,7 +720,7 @@ class FairAlgorithmComparison:
 
         # Steps Distribution
         steps_data = [df[df['algorithm'] == algo]['avg_steps'].values for algo in algorithms]
-        bp2 = axes[1, 1].boxplot(steps_data, labels=algorithms, patch_artist=True)
+        bp2 = axes[1, 1].boxplot(steps_data, tick_labels=algorithms, patch_artist=True)
         for patch, color in zip(bp2['boxes'], [colors[algo] for algo in algorithms]):
             patch.set_facecolor(color)
         axes[1, 1].set_title('Schritte Verteilung')
@@ -707,7 +729,7 @@ class FairAlgorithmComparison:
 
         # Reward Distribution
         reward_data = [df[df['algorithm'] == algo]['avg_reward'].values for algo in algorithms]
-        bp3 = axes[1, 2].boxplot(reward_data, labels=algorithms, patch_artist=True)
+        bp3 = axes[1, 2].boxplot(reward_data, tick_labels=algorithms, patch_artist=True)
         for patch, color in zip(bp3['boxes'], [colors[algo] for algo in algorithms]):
             patch.set_facecolor(color)
         axes[1, 2].set_title('Belohnung Verteilung')

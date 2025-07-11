@@ -39,7 +39,7 @@ class DQNScenarioRunner:
             Dictionary mit allen Ergebnissen
         """
         if episodes is None:
-            episodes = DQN_EPISODES
+            episodes = EPISODES
 
         print("=" * 60)
         print("DQN TRAINING FÜR ALLE SZENARIEN")
@@ -120,8 +120,8 @@ class DQNScenarioRunner:
         # Speichere detaillierte Ergebnisse
         self._save_results(all_results, summary_data)
 
-        # Erstelle Vergleichs-Visualisierung
-        self._create_comparison_plots(summary_data)
+        # Erstelle kombinierte Kurven - IDENTISCH zu Q-Learning
+        self._create_combined_curve_plots(all_results)
 
         return {
             'detailed_results': all_results,
@@ -225,92 +225,119 @@ class DQNScenarioRunner:
 
         print(f"Detaillierte Statistiken gespeichert: {stats_path}")
 
-    def _create_comparison_plots(self, summary_data: List[Dict]):
-        """Erstellt Vergleichs-Visualisierungen."""
+    def _create_combined_curve_plots(self, all_results: Dict):
+        """
+        Erstellt kombinierte Learning- und Success-Kurven für alle Szenarien.
+        IDENTISCH zur Q-Learning Version.
+        """
         import matplotlib.pyplot as plt
         import numpy as np
 
-        df = pd.DataFrame(summary_data)
+        # Kombinierte Learning Curve (Rewards)
+        self._create_combined_learning_curve(all_results)
 
-        # Gruppiere nach Szenarien
-        grouped = df.groupby('scenario').agg({
-            'eval_success_rate': ['mean', 'std'],
-            'eval_avg_steps': ['mean', 'std'],
-            'eval_avg_reward': ['mean', 'std']
-        })
+        # Kombinierte Success Curve
+        self._create_combined_success_curve(all_results)
 
-        # Plot erstellen
-        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('DQN Performance Vergleich aller Szenarien', fontsize=16)
+    def _create_combined_learning_curve(self, all_results: Dict):
+        """Erstellt kombinierte Learning Curve für alle Szenarien - IDENTISCH zu Q-Learning"""
+        import matplotlib.pyplot as plt
+        import numpy as np
 
-        scenarios = list(grouped.index)
-        x = np.arange(len(scenarios))
+        plt.figure(figsize=(12, 8))
 
-        # Success Rate
-        means = [grouped.loc[s, ('eval_success_rate', 'mean')] for s in scenarios]
-        stds = [grouped.loc[s, ('eval_success_rate', 'std')] for s in scenarios]
+        # Farben für Szenarien - IDENTISCHE Reihenfolge und Farben wie Q-Learning
+        colors = ['blue', 'orange', 'green', 'red', 'purple']
+        scenario_names = ['static', 'random_start', 'random_goal', 'random_obstacles', 'container']
 
-        axes[0, 0].bar(x, means, yerr=stds, capsize=5, alpha=0.7, color='skyblue')
-        axes[0, 0].set_title('Erfolgsrate')
-        axes[0, 0].set_ylabel('Erfolgsrate (%)')
-        axes[0, 0].set_xticks(x)
-        axes[0, 0].set_xticklabels(scenarios, rotation=45)
-        axes[0, 0].grid(True, alpha=0.3)
+        for i, scenario in enumerate(scenario_names):
+            if scenario in all_results:
+                # Nimm den ersten Run für Konsistenz (oder Durchschnitt über alle Runs)
+                scenario_results = all_results[scenario]
+                if scenario_results:
+                    # Verwende ersten Run
+                    first_run = scenario_results[0]
+                    episode_rewards = first_run['training']['episode_rewards']
 
-        # Average Steps
-        means = [grouped.loc[s, ('eval_avg_steps', 'mean')] for s in scenarios]
-        stds = [grouped.loc[s, ('eval_avg_steps', 'std')] for s in scenarios]
+                    # Gleitender Durchschnitt für Glättung
+                    window_size = max(1, len(episode_rewards) // 20)
+                    if len(episode_rewards) >= window_size:
+                        smoothed_rewards = np.convolve(episode_rewards, np.ones(window_size) / window_size,
+                                                       mode='valid')
+                        x_vals = range(window_size - 1, len(episode_rewards))
+                    else:
+                        smoothed_rewards = episode_rewards
+                        x_vals = range(len(episode_rewards))
 
-        axes[0, 1].bar(x, means, yerr=stds, capsize=5, alpha=0.7, color='lightcoral')
-        axes[0, 1].set_title('Durchschnittliche Schritte')
-        axes[0, 1].set_ylabel('Schritte')
-        axes[0, 1].set_xticks(x)
-        axes[0, 1].set_xticklabels(scenarios, rotation=45)
-        axes[0, 1].grid(True, alpha=0.3)
+                    plt.plot(x_vals, smoothed_rewards, color=colors[i],
+                             label=scenario.replace('_', ' ').title(), linewidth=2)
 
-        # Average Reward
-        means = [grouped.loc[s, ('eval_avg_reward', 'mean')] for s in scenarios]
-        stds = [grouped.loc[s, ('eval_avg_reward', 'std')] for s in scenarios]
-
-        axes[1, 0].bar(x, means, yerr=stds, capsize=5, alpha=0.7, color='lightgreen')
-        axes[1, 0].set_title('Durchschnittliche Belohnung')
-        axes[1, 0].set_ylabel('Belohnung')
-        axes[1, 0].set_xticks(x)
-        axes[1, 0].set_xticklabels(scenarios, rotation=45)
-        axes[1, 0].grid(True, alpha=0.3)
-
-        # Heatmap: Success Rate pro Run
-        heatmap_data = []
-        for scenario in scenarios:
-            scenario_data = df[df['scenario'] == scenario]['eval_success_rate'].values
-            heatmap_data.append(scenario_data)
-
-        # Pad arrays to same length
-        max_runs = max(len(row) for row in heatmap_data)
-        padded_data = []
-        for row in heatmap_data:
-            if len(row) < max_runs:
-                padded_row = np.pad(row, (0, max_runs - len(row)), constant_values=np.nan)
-            else:
-                padded_row = row
-            padded_data.append(padded_row)
-
-        im = axes[1, 1].imshow(padded_data, cmap='RdYlGn', aspect='auto', vmin=0, vmax=100)
-        axes[1, 1].set_title('Erfolgsrate pro Run')
-        axes[1, 1].set_yticks(range(len(scenarios)))
-        axes[1, 1].set_yticklabels(scenarios)
-        axes[1, 1].set_xlabel('Run')
-
-        # Colorbar
-        plt.colorbar(im, ax=axes[1, 1], label='Erfolgsrate (%)')
-
+        plt.title('Learning Curve', fontsize=16)
+        plt.xlabel('Episode', fontsize=14)
+        plt.ylabel('Reward', fontsize=14)
+        plt.legend(fontsize=12)
+        plt.grid(True, alpha=0.3)
         plt.tight_layout()
 
-        # Speichern
-        plot_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_comparison.pdf')
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        print(f"Vergleichs-Plot gespeichert: {plot_path}")
-#       plt.show() # alle Visualisierungen werden interaktiv angezeigt
+        # Speichern im combined Unterordner - IDENTISCH zu Q-Learning
+        combined_dir = os.path.join(EXPORT_PATH_DQN, 'combined')
+        os.makedirs(combined_dir, exist_ok=True)
+
+        save_path = os.path.join(combined_dir, 'train_learning_curve_combined.pdf')
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Kombinierte Learning Curve gespeichert: {save_path}")
+        plt.close()
+
+    def _create_combined_success_curve(self, all_results: Dict):
+        """Erstellt kombinierte Success Curve für alle Szenarien - IDENTISCH zu Q-Learning"""
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        plt.figure(figsize=(12, 8))
+
+        # Farben für Szenarien - IDENTISCHE Reihenfolge und Farben wie Q-Learning
+        colors = ['blue', 'orange', 'green', 'red', 'purple']
+        scenario_names = ['static', 'random_start', 'random_goal', 'random_obstacles', 'container']
+
+        for i, scenario in enumerate(scenario_names):
+            if scenario in all_results:
+                scenario_results = all_results[scenario]
+                if scenario_results:
+                    # Verwende ersten Run
+                    first_run = scenario_results[0]
+                    episode_successes = first_run['training']['episode_successes']
+
+                    # Konvertiere Boolean zu Integer für Berechnung
+                    success_values = [1 if success else 0 for success in episode_successes]
+
+                    # Gleitender Durchschnitt für Success Rate
+                    window_size = max(1, len(success_values) // 20)
+                    if len(success_values) >= window_size:
+                        smoothed_success = np.convolve(success_values, np.ones(window_size) / window_size,
+                                                       mode='valid') * 100
+                        x_vals = range(window_size - 1, len(success_values))
+                    else:
+                        smoothed_success = [s * 100 for s in success_values]
+                        x_vals = range(len(success_values))
+
+                    plt.plot(x_vals, smoothed_success, color=colors[i],
+                             label=scenario.replace('_', ' ').title(), linewidth=2)
+
+        plt.title('Success Rate Over Training', fontsize=16)
+        plt.xlabel('Episode', fontsize=14)
+        plt.ylabel('Success Rate (%)', fontsize=14)
+        plt.legend(fontsize=12)
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 100)  # Success Rate immer 0-100%
+        plt.tight_layout()
+
+        # Speichern im combined Unterordner - IDENTISCH zu Q-Learning
+        combined_dir = os.path.join(EXPORT_PATH_DQN, 'combined')
+        os.makedirs(combined_dir, exist_ok=True)
+
+        save_path = os.path.join(combined_dir, 'train_success_curve_combined.pdf')
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Kombinierte Success Curve gespeichert: {save_path}")
         plt.close()
 
 

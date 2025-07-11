@@ -102,7 +102,7 @@ python evaluate_policy.py
 python visualize_policy.py
 
 # Szenarien vergleichen
-python compare_scenarios.py
+python legacy_compare_scenarios.py
 ```
 
 ### Deep Q-Learning Training

@@ -97,19 +97,33 @@ class ContainerShipEnv(gym.Env):
         return (x, y)
 
     # Berechnung des Rewards basierend auf Terminierungsgrund
+    # NEUE VERSION - KONSISTENT MIT GRIDENVIRONMENT:
     def calculate_reward(self, terminated_reason=None):
+        """
+        Berechnet Rewards konsistent mit GridEnvironment.
+        Basis-Schritt-Reward + spezifische Belohnungen/Strafen.
+        """
+        # Basis-Reward für jeden Schritt
+        base_reward = REWARDS["step"]  # -1
+
         if terminated_reason == "dropoff":
-            return REWARDS["dropoff"]
+            # Positive Belohnung ZUSÄTZLICH zum Schritt
+            return base_reward + REWARDS["dropoff"]  # -1 + 20 = 19
         elif terminated_reason == "pickup":
-            return REWARDS["pickup"]
+            # Positive Belohnung ZUSÄTZLICH zum Schritt
+            return base_reward + REWARDS["pickup"]  # -1 + 8 = 7
         elif terminated_reason == "obstacle":
-            return REWARDS["obstacle"]
+            # Negative Strafe ZUSÄTZLICH zum Schritt
+            return base_reward + REWARDS["obstacle"]  # -1 + (-10) = -11
         elif terminated_reason == "loop":
-            return REWARDS["loop_abort"]
+            # Negative Strafe ZUSÄTZLICH zum Schritt
+            return base_reward + REWARDS["loop_abort"]  # -1 + (-10) = -11
         elif terminated_reason == "timeout":
-            return REWARDS["timeout"]
+            # Negative Strafe ZUSÄTZLICH zum Schritt
+            return base_reward + REWARDS["timeout"]  # -1 + (-10) = -11
         else:
-            return REWARDS["step"]
+            # Nur Basis-Schritt-Reward
+            return base_reward  # -1
 
     # Überprüfung der Terminierungsbedingungen
     def check_termination_and_rewards(self, next_pos, state_key):
