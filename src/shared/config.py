@@ -96,16 +96,12 @@ EVAL_MAX_STEPS = 50  # Max. Schritte pro Episode in Evaluation (initial: 100)
 # Dateipfade
 # ============================================================================
 
-# Q-Tabelle Pfad basierend auf Modus
-def get_q_table_path(env_mode):
-    return f"q_table_{env_mode}.npy"
-
-# DQN Model Pfad basierend auf Modus
-def get_dqn_model_path(env_mode):
-    return f"dqn_model_{env_mode}.pth"
-
 RESULTS_PATH = "results/"
 PLOTS_PATH = "plots/"
+
+# Dateipfad-Templates (nur Strings, keine Funktionen)
+Q_TABLE_PATH_TEMPLATE = "q_table_{}.npy"  # Format: q_table_static.npy
+DQN_MODEL_PATH_TEMPLATE = "dqn_model_{}.pth"  # Format: dqn_model_static.pth
 
 # ============================================================================
 # Visualisierung Parameter
@@ -144,36 +140,3 @@ for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:
 
 DEBUG_MODE = False  # Debug-Ausgaben aktivieren
 VERBOSE_TRAINING = True  # Detaillierte Training-Ausgaben
-
-# ============================================================================
-# DQN-spezifische Hilfsfunktionen
-# ============================================================================
-
-def get_dqn_config():
-    """Gibt DQN-spezifische Konfiguration zurück"""
-    return {
-        'state_size': DQN_STATE_SIZE,
-        'action_size': N_ACTIONS,
-        'learning_rate': DQN_LEARNING_RATE,
-        'discount_factor': GAMMA,
-        'exploration_rate': DQN_EPSILON_START,
-        'exploration_decay': DQN_EPSILON_DECAY,
-        'min_exploration_rate': DQN_EPSILON_END,
-        'buffer_size': DQN_BUFFER_SIZE,
-        'batch_size': DQN_BATCH_SIZE,
-        'target_update_freq': DQN_TARGET_UPDATE_FREQ,
-        'hidden_size': DQN_HIDDEN_SIZE,
-        'seed': SEED
-    }
-
-def get_training_config():
-    """Gibt gemeinsame Training-Konfiguration zurück"""
-    return {
-        'episodes': EPISODES,  # Für Q-Learning
-        'dqn_episodes': DQN_EPISODES,  # Für DQN
-        'max_steps': MAX_STEPS,
-        'eval_episodes': EVAL_EPISODES,
-        'eval_max_steps': EVAL_MAX_STEPS,
-        'env_mode': ENV_MODE,
-        'seed': SEED
-    }

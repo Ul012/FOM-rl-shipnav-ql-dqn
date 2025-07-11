@@ -3,11 +3,13 @@
 from .config import *
 
 
+# Q-Tabelle Pfad basierend auf Modus
 def get_q_table_path(env_mode: str) -> str:
     """Q-Table Pfad basierend auf Modus"""
     return Q_TABLE_PATH_TEMPLATE.format(env_mode)
 
 
+# DQN Model Pfad basierend auf Modus
 def get_dqn_model_path(env_mode: str) -> str:
     """DQN Model Pfad basierend auf Modus"""
     return DQN_MODEL_PATH_TEMPLATE.format(env_mode)
