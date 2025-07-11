@@ -1,4 +1,4 @@
-# src/comparison/algorithm_comparison_visualization.py
+# src/comparison/legacy_algorithm_comparison_visualization.py
 
 import sys
 import os
@@ -51,7 +51,7 @@ class AlgorithmComparator:
         self._print_summary(ql_results, dqn_results)
 
     def _run_qlearning_evaluation(self) -> Tuple[Dict, Dict]:
-        """Führt Q-Learning Evaluierung aus - direkte Implementierung wie in compare_algorithms.py."""
+        """Führt Q-Learning Evaluierung aus - direkte Implementierung wie in compare_algorithms_v1.py."""
         print("\n📊 Q-Learning Evaluierung...")
 
         try:
@@ -199,7 +199,7 @@ class AlgorithmComparator:
         return results
 
     def _run_dqn_evaluation(self) -> Tuple[Dict, Dict]:
-        """Führt DQN Evaluierung aus - direkte Implementierung wie in compare_algorithms.py."""
+        """Führt DQN Evaluierung aus - direkte Implementierung wie in compare_algorithms_v1.py."""
         print("\n🧠 DQN Evaluierung...")
 
         try:
