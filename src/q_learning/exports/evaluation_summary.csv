@@ -1,6 +1,6 @@
 Szenario,Success Rate (%),Total Reward,Avg. Reward,Avg. Steps,Reward Variance
 static,82.19999999999999,-993.0,-1.99,9.2,70.71
-random_start,89.8,1873.0,3.75,5.1,61.66
-random_goal,43.0,-7253.0,-14.51,13.5,276.99
-random_obstacles,17.0,-6870.0,-13.74,7.3,65.38
-container,8.4,-6995.0,-13.99,10.5,133.04
+random_start,90.0,1825.0,3.65,5.2,64.35
+random_goal,37.2,-8252.0,-16.5,14.3,252.19
+random_obstacles,18.4,-6834.0,-13.67,7.5,69.19
+container,0.0,-7582.0,-15.16,10.8,112.77
