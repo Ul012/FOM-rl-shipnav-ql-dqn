@@ -15,7 +15,8 @@ import torch.optim as optim
 # Projektstruktur für Imports anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.shared.config import get_dqn_config, ACTIONS, GRID_SIZE, REWARDS
+from src.shared.config import ACTIONS, GRID_SIZE, REWARDS
+from src.shared.config_utils import get_dqn_config
 
 # Experience tuple für Replay Buffer
 Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])

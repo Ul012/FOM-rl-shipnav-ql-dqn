@@ -15,7 +15,7 @@ import pygame
 import time
 
 # Lokale Module
-from src.shared.config import (ENV_MODE, MAX_STEPS, CELL_SIZE, FRAME_DELAY, EXPORT_PDF, EXPORT_PATH, REWARDS)
+from src.shared.config import (ENV_MODE, MAX_STEPS, CELL_SIZE, FRAME_DELAY, EXPORT_PDF, EXPORT_PATH_QL, REWARDS)
 from shared.envs.grid_environment import GridEnvironment
 from shared.envs.container_environment import ContainerShipEnv
 

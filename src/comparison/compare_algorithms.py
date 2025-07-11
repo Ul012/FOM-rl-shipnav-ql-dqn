@@ -17,10 +17,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 # ZENTRALE CONFIG - Alle Parameter stammen aus der gemeinsamen config.py
 from src.shared.config import (
     SEED, EPISODES, DQN_EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, MAX_STEPS,
-    EXPORT_PATH_COMP, get_dqn_model_path, get_q_table_path,
+    EXPORT_PATH_COMP, Q_TABLE_PATH_TEMPLATE, DQN_MODEL_PATH_TEMPLATE,
     GAMMA, ALPHA, EPSILON,  # Q-Learning Parameter
-    DQN_LEARNING_RATE, DQN_EPSILON_START, DQN_EPSILON_END, DQN_EPSILON_DECAY  # DQN Parameter
+    DQN_LEARNING_RATE, EPSILON_START, EPSILON_END, EPSILON_DECAY  # Gemeinsame Epsilon Parameter
 )
+
+from src.shared.config_utils import get_dqn_model_path, get_q_table_path
 
 
 @dataclass

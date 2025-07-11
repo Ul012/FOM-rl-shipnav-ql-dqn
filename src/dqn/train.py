@@ -13,14 +13,13 @@ from src.dqn.deep_q_agent import DeepQLearningAgent
 from src.shared.envs.grid_environment import GridEnvironment
 from src.shared.envs.container_environment import ContainerShipEnv
 from src.shared.config import (
-    get_training_config,
     DQN_EPISODES,
     MAX_STEPS,
     EVAL_EPISODES,
-    get_dqn_model_path,
     EXPORT_PATH_DQN,
     SEED
 )
+from src.shared.config_utils import get_training_config, get_dqn_model_path
 
 
 class DQNTrainer:

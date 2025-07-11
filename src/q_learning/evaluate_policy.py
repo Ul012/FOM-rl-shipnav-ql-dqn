@@ -15,8 +15,8 @@ import numpy as np
 from collections import defaultdict
 
 # Lokale Module
-from shared.config import (ENV_MODE, EPISODES, MAX_STEPS, LOOP_THRESHOLD, REWARDS,
-                    get_q_table_path, EXPORT_PDF, EXPORT_PATH, SEED)
+from shared.config import (ENV_MODE, EPISODES, MAX_STEPS, LOOP_THRESHOLD, REWARDS, EXPORT_PDF, EXPORT_PATH_QL, SEED)
+from shared_config_utils import get_q_table_path
 
 # Utils
 from utils.common import set_all_seeds, obs_to_state, check_success, setup_export
