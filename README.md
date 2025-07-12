@@ -1,201 +1,96 @@
-# RL Ship Navigation: Q-Learning vs Deep Q-Learning
+# 🚢 Reinforcement Learning: Q-Learning vs Deep Q-Learning in Grid Navigation
 
-Ein Vergleich zwischen Q-Learning und Deep Q-Learning Algorithmen für autonome Schiffsnavigation in Grid-Umgebungen.
+Dieses Projekt untersucht und vergleicht tabellenbasiertes Q-Learning mit Deep Q-Learning (DQN) zur Navigation autonomer Agenten in simulierten Gitterumgebungen. Ziel ist eine reproduzierbare Evaluation beider Verfahren unter einheitlichen Rahmenbedingungen.
 
-## 📋 Projektübersicht
-
-Dieses Projekt vergleicht die Leistung von klassischem Q-Learning und Deep Q-Learning (DQN) in verschiedenen Navigationsszenarien:
-
-- **Statische Umgebung**: Feste Start-, Ziel- und Hindernis-Positionen
-- **Dynamische Szenarien**: Zufällige Start-, Ziel- oder Hindernis-Positionen  
-- **Container-Umgebung**: Pickup/Dropoff-Aufgaben
-
-## 🧠 Algorithmen
-
-### Q-Learning
-- Tabellenbasierter Ansatz mit expliziter Q-Tabelle
-- Epsilon-Greedy Exploration
-- Optimal für kleine, diskrete Zustandsräume
-
-### Deep Q-Learning (DQN)
-- Neuronale Netzwerke approximieren Q-Funktion
-- Experience Replay für stabiles Training
-- Target Network für stabilere Updates
-- Skaliert auf größere Zustandsräume
-
-## 🏗️ Projektstruktur
+## 📁 Projektstruktur
 
 ```
 ship-navigation-ql-dqn/
 ├── src/
-│   ├── shared/           # Gemeinsame Komponenten
-│   │   ├── config.py     # Gemeinsame Konfiguration
-│   │   └── envs/         # Environment-Implementierungen
-│   │       ├── grid_environment.py
-│   │       └── container_environment.py
-│   ├── q_learning/       # Q-Learning Implementation
-│   │   ├── train.py      # Training
-│   │   ├── evaluate_policy.py
-│   │   ├── visualize_policy.py
-│   │   ├── compare_scenarios.py
-│   │   └── utils/        # Q-Learning spezifische Utils
-│   ├── dqn/             # Deep Q-Learning Implementation
-│   │   ├── deep_q_agent.py
-│   │   ├── train.py
-│   │   └── train_all_scenarios.py
-│   ├── comparison/       # Algorithmus-Vergleich
-│   │   └── compare_algorithms.py
-│   └── experiments/      # Vergleichsexperimente
-├── exports/             # Trainings-Ergebnisse und Plots
-├── docs/               # Dokumentation
-└── README.md
+│   ├── q_learning/          # Q-Learning-Training, Evaluation, Visualisierung
+│   ├── dqn/                 # DQN-Training, Evaluation, Visualisierung
+│   ├── comparison/          # Algorithmusvergleich & Visualisierungen
+│   └── shared/              # Konfigurationen, Umgebungen, utils
+├── docs/                    # Dokumentation (MkDocs)
+├── exports/                 # Ausgabedateien (PDFs, CSVs, Plots)
+└── README.md                # Projektübersicht
 ```
 
-## 🚀 Installation & Setup
+## ⚙️ Setup
 
-### Voraussetzungen
-- Python 3.10+
-- Git
+1. Repository klonen  
+2. Virtuelle Umgebung erstellen und aktivieren  
+3. Abhängigkeiten installieren
 
-### Installation
-
-1. **Repository klonen:**
 ```bash
-git clone https://github.com/Ul012/FOM-rl-shipnav-ql-dql.git
-cd FOM-rl-shipnav-ql-dql
-```
-
-2. **Virtual Environment erstellen:**
-```bash
-python -m venv C:\venvs\ql-dqn-venv  # Windows
-# oder 
-python -m venv venv  # Linux/Mac
-
-# Aktivieren:
-C:\venvs\ql-dqn-venv\Scripts\activate  # Windows
-# oder
-source venv/bin/activate  # Linux/Mac
-```
-
-3. **Dependencies installieren:**
-```bash
+git clone https://github.com/DeinUser/ship-navigation-ql-dqn.git
+cd ship-navigation-ql-dqn
+python -m venv venv
+venv\Scripts\activate     # Windows
+source venv/bin/activate    # Linux/Mac
 pip install -r requirements.txt
 ```
 
-## 🎮 Verwendung
+## 🧠 Trainingssteuerung
 
-### Q-Learning Training
+### Q-Learning
 
 ```bash
 cd src/q_learning
-
-# Einzelnes Szenario trainieren
-python train.py
-
-# Alle Szenarien trainieren
 python train_all_scenarios.py
-
-# Policy evaluieren
-python evaluate_policy.py
-
-# Policy visualisieren
-python visualize_policy.py
-
-# Szenarien vergleichen
-python legacy_compare_scenarios.py
 ```
 
-### Deep Q-Learning Training
+### Deep Q-Learning
 
 ```bash
 cd src/dqn
-
-# Einzelnes Szenario trainieren
-python train.py --mode static --episodes 500
-
-# Alle Szenarien trainieren
 python train_all_scenarios.py --episodes 500 --runs 3
-
-# Nur Evaluation (lädt gespeichertes Modell)
-python train.py --mode static --eval-only
 ```
 
-### Algorithmus-Vergleich
+### Vergleichsvisualisierung
+## 📊 Vergleichsvisualisierung
+
+Es stehen drei Varianten für den visuellen Vergleich der Algorithmen zur Verfügung:
+
+1. **2x3-Visualisierung** (`compare_algorithms_2x3.py`)  
+   → Führt die Evaluation durch und speichert die CSV-Datei (`algorithm_comparison_2x3.csv`)
+
+2. **2x2 V1** (`compare_algorithms_2x2_v1.py`)  
+   → Wissenschaftliches Grid-Layout mit Erfolgsraten, Belohnung, Schritten und Scatterplot  
+   **Nutzt die CSV aus 2x3 als Grundlage.**
+
+3. **2x2 V2** (`compare_algorithms_2x2_v2.py`)  
+   → Fokus auf Single-Agent-Darstellung mit Heatmap  
+   **Nutzt ebenfalls die CSV aus 2x3 als Grundlage.**
+
+➡️ **Wichtig:** Die 2x3-Variante muss vor den anderen beiden ausgeführt werden.
+
 
 ```bash
 cd src/comparison
-
-# Vollständiger Vergleich beider Algorithmen
-python legacy_compare_algorithms.py --runs 5
-
-# Schneller Test-Vergleich
-python legacy_compare_algorithms.py --ql-episodes 100 --dqn-episodes 100 --runs 2
+python compare_algorithms_2x2_v1.py
 ```
 
-### Konfiguration anpassen
+## 🌍 Szenarien
 
-Editiere `src/shared/config.py` für:
-- **Q-Learning**: Lernrate, Epsilon, Gamma
-- **DQN**: Network-Architektur, Batch-Size, Experience Replay
-- **Environment**: Grid-Größe, Rewards, Max-Steps
-- **Training**: Episoden, Seeds für Reproduzierbarkeit
+Es werden fünf Varianten unterschieden:
+- `static` – feste Start-/Ziel-/Hindernispositionen
+- `random_start` – zufälliger Start
+- `random_goal` – zufälliges Ziel
+- `random_obstacles` – zufällige Hindernisse
+- `container` – Aufgaben mit Pickup & Dropoff
 
-## 📊 Szenarien
+## 📊 Ergebnisse
 
-### 1. Statisches Grid (`static`)
-- Feste Positionen für Start, Ziel und Hindernisse
-- Baseline für Vergleiche
+Ergebnisse und Visualisierungen (Lernkurven, Erfolgsraten, Vergleichsplots) werden automatisch im jeweiligen `exports/`-Verzeichnis gespeichert. Q-Tabellen und Modellgewichte werden szenariobezogen abgelegt.
 
-### 2. Zufälliger Start (`random_start`)
-- Start-Position wird zufällig gewählt
-- Ziel und Hindernisse bleiben fest
+## 📚 Dokumentation
 
-### 3. Zufälliges Ziel (`random_goal`)
-- Ziel-Position wird zufällig gewählt
-- Start und Hindernisse bleiben fest
+Die technische und inhaltliche Dokumentation ist mit MkDocs aufbereitet:
 
-### 4. Zufällige Hindernisse (`random_obstacles`)
-- Hindernis-Positionen werden zufällig gewählt
-- Start und Ziel bleiben fest
-
-### 5. Container-Umgebung (`container`)
-- Pickup/Dropoff-Aufgaben
-- Komplexere Reward-Struktur
-
-## 📈 Ergebnisse
-
-Nach dem Training werden folgende Dateien erstellt:
-
-**Q-Learning:**
-- **Q-Tabellen**: `q_table_{scenario}.npy`
-- **Lernkurven**: `exports/learning_curve_{scenario}.png`
-- **Erfolgsraten**: `exports/success_curve_{scenario}.png`
-
-**Deep Q-Learning:**
-- **Modelle**: `dqn_model_{scenario}.pth`
-- **Trainingsverlauf**: `exports/dqn_training_{scenario}.pdf`
-- **Verlustkurven**: Integriert in Trainingsplots
-
-**Vergleiche:**
-- **Algorithmus-Vergleich**: `exports/algorithm_comparison.pdf`
-- **Detaillierte CSV**: `exports/algorithm_comparison.csv`
-- **Heatmaps**: `exports/algorithm_heatmap_comparison.pdf`
-
-## 🔧 Troubleshooting
-
-### Häufige Probleme
-
-**ModuleNotFoundError:**
 ```bash
-pip install -r requirements.txt
+mkdocs serve
 ```
 
-**CUDA/GPU Probleme (DQN):**
-- DQN erkennt automatisch verfügbare Hardware
-- Bei Problemen: CPU-Modus in `config.py` forcieren
+→ erreichbar unter [http://localhost:8000](http://localhost:8000)
 
-**Memory Errors (DQN):**
-- Reduziere `DQN_BATCH_SIZE` oder `DQN_BUFFER_SIZE` in `config.py`
-
-**Import Errors:**
-- Führe Befehle aus dem Projekt-Root aus: `python -m src.dqn.train`

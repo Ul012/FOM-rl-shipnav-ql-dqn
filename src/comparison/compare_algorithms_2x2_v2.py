@@ -18,8 +18,8 @@ def create_2x2_v2_visualization(comparison_data):
     fig.suptitle('Single-Agent Szenario-Vergleich', fontsize=16, fontweight='bold')
 
     # Ohne Container für bessere Darstellung
-    scenarios = ['static', 'random_start', 'random_obstacles', 'random_goal']
-    scenario_labels = ['Static', 'Random Start', 'Random Obstacles', 'Random Goal']
+    scenarios = ['static', 'random_start', 'random_obstacles', 'random_goal', 'container']
+    scenario_labels = ['Static', 'Random Start', 'Random Obstacles', 'Random Goal', 'Container']
     algorithms = ['Q-Learning', 'DQN']
     x = np.arange(len(scenario_labels))
     width = 0.35
