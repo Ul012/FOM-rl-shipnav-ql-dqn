@@ -59,7 +59,7 @@ LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = False  # Standard: festes Epsilon, optional: Decay aktivieren
+USE_EPSILON_DECAY = True  # Standard: festes Epsilon, optional: Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon

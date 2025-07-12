@@ -46,8 +46,15 @@ python train_all_scenarios.py
 cd src/dqn
 python train_all_scenarios.py --episodes 500 --runs 3
 ```
+### Hinweis zur Ausführung
 
-### Vergleichsvisualisierung
+Die Trainings- und Vergleichsskripte sind auf eine Ausführung direkt aus der Entwicklungsumgebung (z. B. über den „Run“-Button in PyCharm) optimiert. Dabei wird die Projektstruktur korrekt erkannt und alle Importe funktionieren ohne weitere Anpassungen.
+
+Für die Ausführung über das Terminal sind ggf. zusätzliche Konfigurationsschritte erforderlich (z. B. `PYTHONPATH` oder Modulaufruf mit `-m`).
+
+Empfohlen wird daher die Nutzung der bereitgestellten Run-Konfigurationen in PyCharm.
+
+
 ## 📊 Vergleichsvisualisierung
 
 Es stehen drei Varianten für den visuellen Vergleich der Algorithmen zur Verfügung:
