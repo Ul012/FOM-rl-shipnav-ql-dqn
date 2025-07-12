@@ -1,66 +1,36 @@
 # Training und Konfiguration
 
-## Q-Learning
+## Trainingssteuerung
 
-### Trainingsablauf
+Das Training erfolgt über skriptgesteuerte Abläufe in den jeweiligen Unterordnern `q_learning/` und `dqn/`. Für jedes Verfahren existiert ein zentrales Trainingsskript (`train_all_scenarios.py`), das mehrere Umgebungsmodi sequentiell durchläuft. Dabei wird jeder Durchlauf mehrfach wiederholt.
 
-Das Q-Learning-Training erfolgt durch iteratives Ausführen von Episoden in einer simulierten Umgebung. Dabei werden die Q-Werte nach jedem Schritt entsprechend der Lernregel angepasst.
+Das DQN-Training erfolgt objektorientiert über die Klasse `DQNTrainer`, während Q-Learning über Subprozess-Aufrufe gesteuert wird.
 
-Typischer Ablauf:
-- Start der Umgebung im gewünschten Szenario
-- Schrittweises Lernen durch Interaktion mit der Umgebung
-- Speicherung der Q-Tabelle und optionaler Auswertungen
+## Konfigurationsprinzip
 
-Es können einzelne oder mehrere vordefinierte Szenarien nacheinander trainiert werden. Die Trainingsparameter werden zentral über eine Konfigurationsdatei gesteuert.
+Die wichtigsten Hyperparameter sind zentral in `config.py` hinterlegt. Zugriff und Validierung erfolgen über `config_utils.py`. Parameter wie Lernrate, Epsilon-Strategie, Episodenanzahl oder Seed können über diese Dateien angepasst werden. 
 
-## Deep Q-Learning (DQN)
+Zur flexiblen Ausführung lassen sich bestimmte Parameter zusätzlich über Kommandozeilenargumente oder Umgebungsvariablen übergeben.
 
-### Trainingsablauf
+## Trainingsmetriken
 
-Auch das DQN-Training erfolgt episodisch. Die Aktualisierung der Netzwerkgewichte basiert auf gesampelten Zustandsübergängen aus einem Replay-Puffer. Zusätzlich werden ein Zielnetzwerk und batchweises Lernen verwendet.
+Während und nach dem Training werden verschiedene Kennzahlen erfasst, unter anderem:
 
-Wichtige Merkmale:
-- Netzwerkstruktur und Lernparameter sind konfigurierbar
-- Training kann mit oder ohne Visualisierung durchgeführt werden
-- Es besteht die Möglichkeit, vortrainierte Modelle zu laden und nur zu evaluieren
+- Erfolgsrate über alle Episoden
+- Durchschnittliche Schrittanzahl bis zum Ziel
+- Durchschnittlicher Reward pro Episode
+- Explorationseinstellungen und Replay-Speichergröße (bei DQN)
 
-## Algorithmusvergleich
+Die Trainingsverläufe werden pro Szenario als PDF-Dateien gespeichert und zusätzlich tabellarisch dokumentiert.
 
-Ein separater Vergleichsmodus ermöglicht die parallele oder sequenzielle Auswertung beider Algorithmen. Dabei werden gemeinsame Metriken erfasst, etwa Erfolgsraten, durchschnittliche Schritte oder kumulierte Belohnungen. Die Ergebnisse werden tabellarisch und grafisch zusammengeführt.
+## Ablaufbeispiel
 
-## Konfigurierbare Parameter
+```bash
+cd src/q_learning
+python train_all_scenarios.py
+```
 
-Die wichtigsten Einstellungen für Training und Evaluation werden in einer zentralen Konfigurationsdatei verwaltet. Diese umfasst unter anderem:
-
-- Wahl des Szenarios
-- Anzahl der Trainings-Episoden
-- Maximale Schrittanzahl pro Episode
-- Parameter für Exploration und Lernrate
-- Netzwerkspezifische Hyperparameter (DQN)
-
-Diese Werte sind jederzeit anpassbar und ermöglichen eine flexible Steuerung des Experiments.
-
-## Szenarien
-
-Das System unterstützt mehrere Umgebungsvarianten, die sich in Start-/Zielbedingungen und Aufgabenstellung unterscheiden. Typische Szenarien umfassen:
-
-- **Statisches Layout**: Feste Start- und Zielpositionen
-- **Zufälliger Start/Ziel**: Dynamische Start- oder Zielsetzung
-- **Variable Hindernisse**: Zufällige Platzierung von Blockaden
-- **Erweiterte Aufgaben**: Transport eines Objekts zum Zielort
-
-Jeder dieser Modi kann einzeln oder im Batch trainiert und evaluiert werden.
-
-## Export und Evaluation
-
-Während des Trainings und der anschließenden Auswertung werden automatisch verschiedene Ergebnisse gespeichert:
-
-- Lernkurven (z. B. Erfolgsrate über Episoden)
-- Ausgewertete Modelle oder Q-Tabellen
-- Vergleichsdaten (z. B. CSVs oder Diagramme)
-
-Diese Dateien dienen der Analyse, dem Vergleich und der Reproduzierbarkeit der Ergebnisse.
-
-## Reproduzierbarkeit
-
-Für konsistente Ergebnisse werden alle relevanten Zufallsquellen kontrolliert. Ein globaler Seed stellt sicher, dass identische Konfigurationen wiederholbare Resultate liefern – sowohl für Q-Learning als auch für DQN. Unterschiede in der verwendeten Hardware (CPU/GPU) werden berücksichtigt.
+```bash
+cd src/dqn
+python train_all_scenarios.py --episodes 500 --runs 3
+```

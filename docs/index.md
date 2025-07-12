@@ -1,53 +1,36 @@
-# 🚢 Q-Learning vs Deep Q-Learning für Schiffsnavigation
+# 📘 Projektübersicht: Q-Learning vs Deep Q-Learning
 
-Dieses Projekt vergleicht zwei verstärkendes Lernen (Reinforcement Learning) basierte Ansätze zur autonomen Navigation in einer simulierten Schiffsumgebung: das klassische tabellenbasierte Q-Learning und Deep Q-Learning (DQN) mit neuronalen Netzwerken.
+Dieses Projekt untersucht die Anwendung von Reinforcement Learning zur Navigation autonomer Agenten in Gitterumgebungen. Es werden zwei Ansätze implementiert und verglichen:
 
-## 🎯 Projektziele
+- **Q-Learning** – klassisches tabellenbasiertes Verfahren
+- **Deep Q-Learning (DQN)** – Approximation über neuronale Netze
 
-- Implementierung beider Algorithmen zur Navigation in diskreten Gitterumgebungen
-- Vergleich des Lernverhaltens unter einheitlichen Bedingungen
-- Evaluation in verschiedenen Szenarien mit zunehmender Komplexität
-- Bereitstellung einer modularen, reproduzierbaren Projektstruktur
+Ziel ist ein reproduzierbarer Vergleich in mehreren Szenarien mit variabler Komplexität.
 
-## 🧠 Algorithmenüberblick
+---
 
-### Q-Learning
-- Verwendet eine Q-Tabelle zur Speicherung von Zustands-Aktions-Werten
-- Entscheidung basierend auf einer Epsilon-Greedy-Strategie
-- Eignet sich für überschaubare, vollständig diskrete Zustandsräume
+## 🔍 Dokumentationsstruktur
 
-### Deep Q-Learning (DQN)
-- Approximation der Q-Funktion durch ein neuronales Netzwerk
-- Nutzung von Techniken wie Experience Replay und Target Networks
-- Ermöglicht Anwendung auf größere oder kontinuierliche Zustandsräume
+| Thema               | Beschreibung |
+|--------------------|--------------|
+| [⚙️ Setup](setup.md) | Einrichtung, Abhängigkeiten, Projektstart |
+| [🧠 Funktionsweise](funktionsweise.md) | Technische Grundlagen beider Algorithmen |
+| [🎯 Training](training.md) | Trainingsdurchführung und Konfigurationsmöglichkeiten |
+| [📊 Visualisierung](visualisierung.md) | Darstellung und Vergleich von Ergebnissen |
+| [📚 Entwicklung](dokumentation.md) | Hinweise zur Projektstruktur und Erweiterung |
 
-## 🗺️ Szenarien
+---
 
-Die Algorithmen werden in mehreren vorgegebenen Umgebungsvarianten getestet. Diese unterscheiden sich durch Start- und Zielbedingungen sowie durch zusätzliche Aufgaben wie das Aufnehmen und Abliefern eines Containers:
+## 🗺️ Unterstützte Szenarien
 
-- **Statisches Szenario**: Feste Start- und Zielposition
-- **Zufälliger Start**: Startposition wird zufällig gewählt
-- **Zufälliges Ziel**: Zielposition variiert
-- **Zufällige Hindernisse**: Platzierung von Hindernissen ändert sich
-- **Container-Szenario**: Der Agent muss zusätzlich einen Container transportieren
+- **Static**: Feste Start-/Zielposition
+- **Random Start**: Zufälliger Startpunkt
+- **Random Goal**: Zufälliges Ziel
+- **Random Obstacles**: Zufällige Hindernisse
+- **Container**: Aufgabe mit Pickup und Dropoff
 
-## 🧱 Projektstruktur
+---
 
-\`\`\`plaintext
-ship-navigation-ql-dqn/
-├── src/
-│   ├── q_learning/          # Q-Learning-Implementierung
-│   ├── dqn/                 # DQN-Implementierung
-│   ├── comparison/          # Vergleich beider Algorithmen
-│   └── shared/              # Gemeinsame Konfiguration und Umgebungen
-├── docs/                    # Technische und inhaltliche Dokumentation
-└── exports/                 # Automatisch erzeugte Modelle und Statistiken
-\`\`\`
+## 🧪 Vergleichsoptionen
 
-## 🔍 Weiterführende Inhalte
-
-- [⚙️ Setup](setup.md) – Installationsanleitung und Projektstart
-- [🧠 Funktionsweise](funktionsweise.md) – Technischer Überblick über die Algorithmen
-- [🎯 Training](training.md) – Ausführung, Konfiguration und Szenariensteuerung
-- [📊 Visualisierung](visualisierung.md) – Darstellung von Policies und Evaluationen
-- [📚 Entwicklung](dokumentation.md) – Informationen zur Projektstruktur und Pflege
+Das Projekt enthält drei Varianten zur algorithmischen Ergebnisvisualisierung. Die zentrale Auswertung erfolgt über `compare_algorithms_2x3.py`. Auf Basis der erzeugten CSV können weitere Varianten wie 2x2-Vergleiche erzeugt werden.

@@ -1,76 +1,36 @@
 # Installation und Setup
 
-## Systemanforderungen
+## Voraussetzungen
 
-- Python ab Version 3.8
-- Mindestens 4 GB Arbeitsspeicher
-- Optional: GPU-Unterstützung (für Deep Q-Learning)
+Für das Projekt wird Python 3.8 oder höher benötigt. Empfohlen wird die Nutzung einer virtuellen Umgebung. Die Abhängigkeiten sind in der Datei `requirements.txt` definiert.
 
-## Installation
-
-### Repository klonen und vorbereiten
+## Einrichtung
 
 ```bash
-git clone https://github.com/Ul012/FOM-rl-shipnav-ql-dql.git
-cd FOM-rl-shipnav-ql-dql
-```
+# Repository klonen
+git clone https://github.com/DeinUser/ship-navigation-ql-dqn.git
+cd ship-navigation-ql-dqn
 
-### Virtuelle Umgebung erstellen
+# Virtuelle Umgebung erstellen und aktivieren
+python -m venv venv
+venv\Scripts\activate     # Windows
+source venv/bin/activate    # Linux/Mac
 
-```bash
-python -m venv ql-dqn-venv
-# Aktivierung (je nach Betriebssystem)
-ql-dqn-venv\Scripts\activate       # Windows
-source ql-dqn-venv/bin/activate      # Linux/macOS
-```
-
-### Abhängigkeiten installieren
-
-```bash
+# Abhängigkeiten installieren
 pip install -r requirements.txt
 ```
 
-### Funktionsprüfung
+## Schnelltest
+
+Zur Überprüfung der Installation kann ein einfacher Importtest durchgeführt werden:
 
 ```bash
 cd src
-python -c "from shared.envs import GridEnvironment; print('Setup OK')"
+python -c "from shared.envs import GridEnvironment; print('Setup erfolgreich')"
 ```
 
-## Projektstruktur
+## Strukturüberblick
 
-```plaintext
-ship-navigation-ql-dqn/
-├── src/                   # Implementierung von Q-Learning und DQN
-│   ├── q_learning/        # Q-Learning
-│   ├── dqn/               # Deep Q-Learning
-│   ├── comparison/        # Vergleich beider Ansätze
-│   └── shared/            # Gemeinsame Umgebungen und Konfiguration
-├── docs/                  # Dokumentation
-└── exports/               # Trainings- und Evaluationsausgaben
-```
+Die zentralen Komponenten befinden sich im Ordner `src/`. Für beide Algorithmen gibt es getrennte Trainings- und Evaluationsskripte. Die Dokumentation ist in `docs/` abgelegt und mit MkDocs aufrufbar.
 
-## Verwendung
-
-### Q-Learning
-
-- Training einzelner oder aller Szenarien
-- Evaluation und Visualisierung über eigene Skripte
-- Export der Ergebnisse erfolgt automatisch
-
-### Deep Q-Learning
-
-- Steuerung über Parameter (z. B. Modus, Episodenzahl)
-- Modelle können trainiert oder zur reinen Evaluation geladen werden
-- Visualisierung und Analyse wie bei Q-Learning
-
-### Vergleich
-
-Ein zentrales Skript ermöglicht den Vergleich beider Algorithmen unter einheitlichen Bedingungen.
-
-## Fehlerbehandlung
-
-Typische Hinweise zur Problembehebung:
-- Sicherstellen, dass Skripte im `src`-Verzeichnis ausgeführt werden
-- Abhängigkeiten prüfen, insbesondere PyTorch und pygame
-- Exportverzeichnisse bei Bedarf manuell anlegen
+Ergebnisse wie Lernkurven, Erfolgsraten und Vergleichsplots werden automatisch im Verzeichnis `exports/` gespeichert. Für jedes Szenario und jeden Algorithmus wird ein separater Export erzeugt.

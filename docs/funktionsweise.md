@@ -2,13 +2,11 @@
 
 ## Q-Learning
 
-Q-Learning ist ein tabellenbasierter Ansatz zur Lösung von Markov-Entscheidungsprozessen. Für jeden Zustand-Aktions-Paar wird ein Q-Wert gespeichert, der iterativ aktualisiert wird. Ziel ist die Annäherung an eine optimale Policy, die in jeder Situation die langfristig beste Entscheidung ermöglicht.
-
-### Lernformel
-
-```python
-Q(s,a) ← Q(s,a) + α * [r + γ * max(Q(s',a')) - Q(s,a)]
-```
+- Verwendung einer Q-Tabelle zur Entscheidung
+- Für jeden Zustand-Aktions-Paar wird ein Q-Wert gespeichert, der iterativ aktualisiert wird.
+- Aktualisierung mittels Bellman-Gleichung
+- Exploration über feste oder decaying ε-greedy-Strategie
+- Ziel ist die Annäherung an eine optimale Policy, die in jeder Situation die langfristig beste Entscheidung ermöglicht.
 
 Dabei stehen:
 - `α` für die Lernrate
@@ -22,11 +20,14 @@ Zur Auswahl der nächsten Aktion wird typischerweise eine Epsilon-Greedy-Strateg
 
 ### Zustandsrepräsentation
 
-Die Zustände werden diskret codiert. Je nach Umgebung bestehen sie aus Positionsinformationen oder zusätzlichen Merkmalen wie dem Transportstatus eines Containers.
+Die Zustände werden diskret codiert. Je nach Umgebung bestehen sie aus Positionsinformationen (z. B. Zeile, Spalte) sowie bei erweiterten Umgebungen zusätzliche Merkmale wie den Transportstatus eines Objekts.
 
 ## Deep Q-Learning (DQN)
 
-Deep Q-Learning approximiert die Q-Funktion mit einem neuronalen Netzwerk. Damit können auch größere oder kontinuierliche Zustandsräume behandelt werden.
+- Verwendung eines neuronalen Netzwerks zur Approximation der Q-Funktion
+- Techniken: Experience Replay, Target Network
+- Training mittels Mini-Batches und MSE-Loss
+- Unterstützt kontinuierlichere Zustandsräume als tabellarisches Q-Learning
 
 ### Hauptkomponenten
 
@@ -38,12 +39,7 @@ Deep Q-Learning approximiert die Q-Funktion mit einem neuronalen Netzwerk. Damit
 
 Der Trainingsprozess basiert auf der Minimierung des Fehlers zwischen dem geschätzten Q-Wert und einem Zielwert:
 
-```python
-target_q = reward + γ × max(target_network(next_state))
-loss = MSE(q_network(state)[action], target_q)
-```
-
-Die Netzwerkarchitektur kann flexibel angepasst werden und besteht typischerweise aus mehreren vollständig verbundenen Schichten mit ReLU-Aktivierung.
+Zur Trainingszeit wird ein Zielwert berechnet, auf den sich das Q-Netzwerk iterativ anpasst. Die Netzwerkarchitektur kann flexibel angepasst werden und besteht typischerweise aus mehreren vollständig verbundenen Schichten mit ReLU-Aktivierung.
 
 ## Vergleich der Ansätze
 
@@ -61,7 +57,7 @@ Die Netzwerkarchitektur kann flexibel angepasst werden und besteht typischerweis
 
 Beide Algorithmen arbeiten mit denselben simulierten Umgebungen:
 - Einfache Gitter-Navigation
-- Erweiterte Aufgaben mit Objekten wie Containern
+- Erweiterte Aufgaben mit Container-Objekt
 
 ### Belohnungsstruktur
 
@@ -78,7 +74,7 @@ Die genauen Werte sind konfigurierbar und können über die zentrale Konfigurati
 
 Eine Episode endet unter folgenden Bedingungen:
 - Ziel wurde erreicht
-- Ein Abbruchkriterium wurde erfüllt (z. B. zu viele Schleifen)
+- Ein Abbruchkriterium wurde erfüllt (z. B. zu viele Schleifen)
 - Ein Hindernis wurde getroffen
 - Die maximale Schrittanzahl wurde überschritten
 

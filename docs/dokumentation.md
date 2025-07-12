@@ -1,4 +1,4 @@
-# Projektdokumentation und Entwicklung
+# 📚 Produkt-Dokumentation und Entwicklungsstruktur
 
 ## Lokale Dokumentation
 
@@ -30,25 +30,23 @@ docs/
 └── dokumentation.md      # Entwickler- und Wartungsdokumentation
 ```
 
-## Softwarearchitektur
+## Modularer Aufbau
 
-Das Projekt ist modular aufgebaut. Q-Learning und DQN sind in getrennten Verzeichnissen implementiert. Gemeinsame Komponenten wie Umgebungen und Konfigurationsparameter sind zentral in `shared/` abgelegt. Vergleichsskripte befinden sich in einem eigenen Modul.
+Das Projekt ist in separaten Modulen strukturiert:
 
-Zentrale Konzepte:
-- **Trennung der Verantwortlichkeiten** (Single Responsibility)
-- **Modularität** für Wiederverwendbarkeit
-- **Zentrale Konfiguration** über `shared/config.py`
+- `q_learning/` und `dqn/`: eigenständige Algorithmenbereiche
+- `shared/`: Konfiguration, Umgebungen, Utilities
+- `comparison/`: Scripts zur Visualisierung und Evaluation
 
-## Dokumentationsworkflow
+## Dokumentationssystem
 
-1. Änderungen an `.md`-Dateien in `docs/` vornehmen
-2. Vorschau lokal mit `mkdocs serve`
-3. Bei Bedarf statisches HTML erzeugen mit `mkdocs build`
-4. Veröffentlichung optional über GitHub Pages
+Die `.md`-Dateien in `docs/` sind mit [MkDocs](https://www.mkdocs.org/) kompatibel und dienen der projektnahen Beschreibung für Entwicklung, Analyse und Präsentation.
 
-## Erweiterungen
+## Erweiterbarkeit
 
-Für die Dokumentation können bei Bedarf Plugins eingesetzt werden, z. B. zur Darstellung von Diagrammen oder zur PDF-Erzeugung. Diese sind in `requirements.txt` und `mkdocs.yml` konfigurierbar.
+- Neue Szenarien lassen sich durch Ergänzen in der `SCENARIOS`-Struktur einfügen
+- Vergleichsmetriken und Visualisierungen sind unabhängig von der Trainingsmethode
+- Modelle und Q-Tabellen werden szenariobasiert gespeichert
 
 ## Pflege und Wartung
 
@@ -56,4 +54,4 @@ Für die Dokumentation können bei Bedarf Plugins eingesetzt werden, z. B. zur
 - Versionskontrolle für Änderungen nutzen
 - Einheitliche Begriffe und Formatierung sicherstellen
 
-Die Dokumentation dient sowohl zur Einführung als auch zur technischen Referenz und sollte regelmäßig auf Aktualität geprüft werden.
+Die Dokumentation dient als projektnaher Referenzrahmen und sollte fortlaufend mit dem Code synchronisiert werden.
