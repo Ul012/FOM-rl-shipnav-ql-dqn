@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
-from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL, EPISODES
+from src.shared.config import SETUP_NAME, EXPORT_PDF, EXPORT_PATH_QL, EPISODES
 
 
 # Erstellung des Export-Ordners
@@ -37,7 +37,7 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = os.path.join(export_dir, f"train_learning_curve_{env_mode}.pdf")
+        filename = os.path.join(export_dir, f"{SETUP_NAME}_train_learning_curve_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Learning Curve gespeichert: {filename}")
 
@@ -67,7 +67,7 @@ def create_success_curve(success_per_episode, env_mode, show=True, export_dir=No
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = os.path.join(export_dir, f"train_success_curve_{env_mode}.pdf")
+        filename = os.path.join(export_dir, f"{SETUP_NAME}_train_success_curve_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Success Curve gespeichert: {filename}")
 
@@ -121,7 +121,7 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = os.path.join(export_dir, f"train_statistics_{env_mode}.pdf")
+        filename = os.path.join(export_dir, f"{SETUP_NAME}_train_statistics_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Training Statistics gespeichert: {filename}")
 
