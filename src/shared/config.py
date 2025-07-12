@@ -1,4 +1,4 @@
-# config_v1v2.py - Erweiterte Version für Q-Learning und DQN
+# config.py - Erweiterte Version für Q-Learning und DQN
 
 import os
 from pathlib import Path
@@ -6,6 +6,9 @@ from pathlib import Path
 # ============================================================================
 # Basis-Parameter
 # ============================================================================
+
+# Hyperparameter-Setup
+SETUP_NAME = "v1"  # oder "v2" # wird für Exportverzeichnisse verwendet
 
 # Grid Constants
 GRID_SIZE = 5
@@ -59,7 +62,7 @@ LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = True  # Standard: festes Epsilon, optional: Decay aktivieren
+USE_EPSILON_DECAY = False  # Standard: festes Epsilon, optional: Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon
@@ -99,6 +102,7 @@ DQN_TARGET_UPDATE_FREQ = 100  # Target network update frequency
 # DATEIPFADE UND VERZEICHNISSE
 # ============================================================================
 
+# Ergebnisse & Plots
 RESULTS_PATH = "results/"
 PLOTS_PATH = "plots/"
 
@@ -106,10 +110,10 @@ PLOTS_PATH = "plots/"
 Q_TABLE_PATH_TEMPLATE = "q_table_{}.npy"  # Format: q_table_static.npy
 DQN_MODEL_PATH_TEMPLATE = "dqn_model_{}.pth"  # Format: dqn_model_static.pth
 
-# Export-Pfade (selbsterklärend)
-EXPORT_PATH_DQN = os.path.join(os.path.dirname(__file__), "..", "dqn", "exports")
-EXPORT_PATH_QL = os.path.join(os.path.dirname(__file__), "..", "q_learning", "exports")
-EXPORT_PATH_COMP = os.path.join(os.path.dirname(__file__), "..", "comparison", "exports")
+# Export-Pfade
+EXPORT_PATH_QL = "exports"
+EXPORT_PATH_DQN = "src/dqn/exports"
+EXPORT_PATH_COMP = "src/comparison/exports"
 
 # Erstelle Export-Verzeichnisse beim Import
 for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:

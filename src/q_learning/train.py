@@ -18,8 +18,11 @@ if ENV_MODE is None:
     ENV_MODE = CONFIG_ENV_MODE
 
 # Lokale Module
-from src.shared.config import EPISODES, MAX_STEPS
+from src.shared.config import EXPORT_PATH_QL, SETUP_NAME, EPISODES, MAX_STEPS
 from src.shared.config_utils import get_q_learning_config
+
+export_dir = os.path.join(EXPORT_PATH_QL, SETUP_NAME)
+os.makedirs(export_dir, exist_ok=True)
 
 # Utils
 from src.q_learning.utils.common import set_all_seeds, obs_to_state, check_success, setup_export
@@ -35,6 +38,9 @@ SHOW_VISUALIZATIONS = os.getenv("SHOW_VISUALIZATIONS", "true").lower() == "true"
 # ============================================================================
 
 def train_agent(scenario):
+    if scenario is None:
+        scenario = os.getenv("ENV_MODE", "static")
+
     # Seed für Reproduzierbarkeit setzen
     set_all_seeds()
 
@@ -112,9 +118,9 @@ def train_agent(scenario):
     print_training_results(rewards_per_episode, success_per_episode, steps_per_episode)
     save_q_table(Q, ENV_MODE)
 
-    create_learning_curve(rewards_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS)
-    create_success_curve(success_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS)
-    create_training_statistics(rewards_per_episode, success_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS)
+    create_learning_curve(rewards_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS, export_dir=export_dir)
+    create_success_curve(success_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS, export_dir=export_dir)
+    create_training_statistics(rewards_per_episode, success_per_episode, ENV_MODE, show=SHOW_VISUALIZATIONS, export_dir=export_dir)
 
     # Erweiterte Konsolenausgabe: Reward-Varianz und durchschnittliche Schritte
     reward_mean = np.mean(rewards_per_episode)
@@ -138,8 +144,16 @@ def train_agent(scenario):
     print(f"    Maximum: {steps_max}")
 
     # Speichern der Kurven als .npy
-    np.save(f"exports/learning_curve_{scenario}.npy", rewards_per_episode)
-    np.save(f"exports/success_curve_{scenario}.npy", success_per_episode)
+
+    rewards_array = np.array(rewards_per_episode)
+    success_array = np.array(success_per_episode)
+
+    print(f"[DEBUG] Szenario: {scenario}")
+    print(f"[DEBUG] Länge rewards_per_episode: {len(rewards_per_episode)}")
+    print(f"[DEBUG] Länge success_per_episode: {len(success_per_episode)}")
+
+    np.save(os.path.join(export_dir, f"learning_curve_{scenario}.npy"), rewards_array)
+    np.save(os.path.join(export_dir, f"success_curve_{scenario}.npy"), success_array)
 
     return Q, rewards_per_episode, success_per_episode, reward_total
 

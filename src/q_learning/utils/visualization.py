@@ -1,5 +1,6 @@
 # utils/visualization.py
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -18,7 +19,8 @@ def setup_export():
 # ============================================================================
 
 # Erstellung der Lernkurve mit Moving Average
-def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=True):
+def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=True, export_dir=None):
+    export_dir = export_dir or EXPORT_PATH_QL
     plt.figure(figsize=(12, 6))
     plt.plot(rewards_per_episode, alpha=0.3, label="Raw Reward", color='blue')
 
@@ -35,7 +37,7 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH_QL}/train_learning_curve_{env_mode}.pdf"
+        filename = os.path.join(export_dir, f"train_learning_curve_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Learning Curve gespeichert: {filename}")
 
@@ -46,7 +48,8 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
 
 
 # Darstellung der Zielerreichung pro Episode
-def create_success_curve(success_per_episode, env_mode, show=True):
+def create_success_curve(success_per_episode, env_mode, show=True, export_dir=None):
+    export_dir = export_dir or EXPORT_PATH_QL
     plt.figure(figsize=(12, 4))
     plt.plot(success_per_episode, label="Ziel erreicht", color='green', alpha=0.7, linewidth=1)
 
@@ -64,7 +67,7 @@ def create_success_curve(success_per_episode, env_mode, show=True):
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH_QL}/train_success_curve_{env_mode}.pdf"
+        filename = os.path.join(export_dir, f"train_success_curve_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Success Curve gespeichert: {filename}")
 
@@ -75,7 +78,8 @@ def create_success_curve(success_per_episode, env_mode, show=True):
 
 
 # Zusammenstellung mehrerer Statistiken (Histogramm, Erfolgsrate, letzte Rewards, Erfolg/Misserfolg)
-def create_training_statistics(rewards_per_episode, success_per_episode, env_mode, show=True):
+def create_training_statistics(rewards_per_episode, success_per_episode, env_mode, show=True, export_dir=None):
+    export_dir = export_dir or EXPORT_PATH_QL
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
 
     ax1.hist(rewards_per_episode, bins=30, edgecolor='black', alpha=0.7, color='skyblue')
@@ -117,7 +121,7 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     plt.tight_layout()
 
     if EXPORT_PDF:
-        filename = f"{EXPORT_PATH_QL}/train_statistics_{env_mode}.pdf"
+        filename = os.path.join(export_dir, f"train_statistics_{env_mode}.pdf")
         plt.savefig(filename, format='pdf', bbox_inches='tight')
         print(f"Training Statistics gespeichert: {filename}")
 

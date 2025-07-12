@@ -2,6 +2,14 @@
 
 from .config import *
 
+def get_export_path(base_path: str) -> str:
+    """
+    Gibt den Exportpfad für das aktuelle Setup zurück (z. B. exports/v1).
+    """
+    full_path = os.path.join(base_path, SETUP_NAME)
+    os.makedirs(full_path, exist_ok=True)
+    return full_path
+
 
 def get_q_table_path(env_mode: str) -> str:
     """Q-Table Pfad basierend auf Modus"""
@@ -198,6 +206,15 @@ def print_config_summary():
         print(f"  {key}: {value}")
 
     print("=" * 60)
+
+def prepare_export_dirs():
+    """
+    Erstellt Exportverzeichnisse für alle relevanten SETUPs inkl. 'combined'.
+    """
+    for _path in [EXPORT_PATH_QL, EXPORT_PATH_DQN, EXPORT_PATH_COMP]:
+        full_path = os.path.join(_path, SETUP_NAME)
+        os.makedirs(full_path, exist_ok=True)
+        os.makedirs(os.path.join(full_path, "combined"), exist_ok=True)
 
 
 if __name__ == "__main__":

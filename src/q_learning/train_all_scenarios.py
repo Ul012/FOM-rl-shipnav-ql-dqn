@@ -13,6 +13,10 @@ from datetime import datetime
 # Projektstruktur für Import anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from src.shared.config import SETUP_NAME
+from src.shared.config_utils import prepare_export_dirs
+prepare_export_dirs()
+
 from utils.common import setup_export
 from utils.evaluation_export import export_results_to_csv, create_combined_curve_pdf
 
@@ -173,5 +177,5 @@ if __name__ == "__main__":
 
     # Erzeugung kombinierter PDF-Grafiken für Lernverlauf und Erfolgsquote
     scenario_names = [result["name"] for result in scenario_results]
-    create_combined_curve_pdf(scenario_names, export_dir="exports", metric="learning")
-    create_combined_curve_pdf(scenario_names, export_dir="exports", metric="success")
+    create_combined_curve_pdf(scenario_names, export_dir=f"exports/{SETUP_NAME}", metric="learning")
+    create_combined_curve_pdf(scenario_names, export_dir=f"exports/{SETUP_NAME}", metric="success")
