@@ -7,6 +7,9 @@ from pathlib import Path
 # Basis-Parameter
 # ============================================================================
 
+# Hyperparameter-Setup
+SETUP_NAME = "v1"  # oder "v2"
+
 # Grid Constants
 GRID_SIZE = 5
 SEED = 42 # Reproduzierbarkeit
@@ -46,35 +49,45 @@ REWARDS = {
     "dropoff": 20
 }
 
+# ============================================================
+# Setup-spezifische Hyperparameter (Gemeinsam und QL)
+# ============================================================
+
+if SETUP_NAME == "v1":
+    QL_ALPHA = 0.1               # Lernrate
+    GAMMA = 0.95                 # Diskontierungsfaktor
+    QL_EPSILON_FIXED = 0.1       # festes Epsilon
+    DQN_EPSILON_FIXED = 0.1      # DQN festes Epsilon (gleicher Wert für Fairness!)
+    USE_EPSILON_DECAY = False    # kein Decay
+    EPSILON_START = 1.0
+    EPSILON_END = 0.01
+    EPSILON_DECAY = 1.0          # keine Reduktion
+elif SETUP_NAME == "v2":
+    QL_ALPHA = 0.05              # geringere Lernrate
+    GAMMA = 0.99                 # stärkerer Fokus auf Langzeit
+    QL_EPSILON_FIXED = 0.1       # wird nicht verwendet
+    DQN_EPSILON_FIXED = 0.1      # wird nicht verwendet
+    USE_EPSILON_DECAY = True     # aktivierter Decay
+    EPSILON_START = 1.0
+    EPSILON_END = 0.05
+    EPSILON_DECAY = 0.995         # Exploration decay rate - beide Algorithmen
+else:
+    raise ValueError(f"Unbekannter SETUP_NAME: {SETUP_NAME}")
+
 # ============================================================================
 # Training Parameter (Gemeinsam)
 # ============================================================================
 
-GAMMA = 0.95  # Diskontierungsfaktor
 EPISODES = 500  # Trainings-Episoden
 MAX_STEPS = 100  # Max. Schritte pro Episode
 LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
 
-# Exploration Parameter
-EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
-EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
-EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = False  # Standard: festes Epsilon, optional: Decay aktivieren
+# ============================================================================
+# Evaluation Parameter (Gemeinsam)
+# ============================================================================
 
-# Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
-QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon
-DQN_EPSILON_FIXED = 0.1  # DQN festes Epsilon (gleicher Wert für Fairness!)
-
-# Evaluation Parameter - für beide identisch
 EVAL_EPISODES = 500  # Anzahl Episoden für Evaluation - beide
 EVAL_MAX_STEPS = 50  # Max. Schritte pro Episode in Evaluation - beide
-
-# ============================================================================
-# Q-LEARNING PARAMETER
-# ============================================================================
-
-# Q-Learning Hyperparameter
-QL_ALPHA = 0.1  # Lernrate (learning rate) - nur Q-Learning
 
 # ============================================================================
 # DQN Parameter
