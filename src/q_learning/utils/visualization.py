@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
-from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
+from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL, EPISODES
 
 
 # Erstellung des Export-Ordners
@@ -19,16 +19,9 @@ def setup_export():
 
 # Erstellung der Lernkurve mit Moving Average
 def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=True):
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
-
     plt.figure(figsize=(12, 6))
-
-    # Raw Rewards
     plt.plot(rewards_per_episode, alpha=0.3, label="Raw Reward", color='blue')
 
-    # Moving Average
     if len(rewards_per_episode) >= window_size:
         moving_avg = np.convolve(rewards_per_episode, np.ones(window_size) / window_size, mode='valid')
         plt.plot(range(window_size - 1, len(rewards_per_episode)), moving_avg,
@@ -41,7 +34,6 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    # PDF Export
     if EXPORT_PDF:
         filename = f"{EXPORT_PATH_QL}/train_learning_curve_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
@@ -53,16 +45,11 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
         plt.close()
 
 
-# Erstellung der Erfolgskurve
+# Darstellung der Zielerreichung pro Episode
 def create_success_curve(success_per_episode, env_mode, show=True):
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL, EPISODES
-
     plt.figure(figsize=(12, 4))
     plt.plot(success_per_episode, label="Ziel erreicht", color='green', alpha=0.7, linewidth=1)
 
-    # Moving Average für Erfolgsrate
     window_size = min(max(10, EPISODES // 20), len(success_per_episode) // 10)
     if len(success_per_episode) >= window_size:
         success_moving_avg = np.convolve(success_per_episode, np.ones(window_size) / window_size, mode='valid')
@@ -76,7 +63,6 @@ def create_success_curve(success_per_episode, env_mode, show=True):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    # PDF Export
     if EXPORT_PDF:
         filename = f"{EXPORT_PATH_QL}/train_success_curve_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
@@ -88,15 +74,10 @@ def create_success_curve(success_per_episode, env_mode, show=True):
         plt.close()
 
 
-# Erstellung der Trainingsstatistiken
+# Zusammenstellung mehrerer Statistiken (Histogramm, Erfolgsrate, letzte Rewards, Erfolg/Misserfolg)
 def create_training_statistics(rewards_per_episode, success_per_episode, env_mode, show=True):
-    import matplotlib.pyplot as plt
-    from src.shared.config import EXPORT_PDF, EXPORT_PATH_QL
-    import numpy as np
-
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
 
-    # Reward-Histogramm
     ax1.hist(rewards_per_episode, bins=30, edgecolor='black', alpha=0.7, color='skyblue')
     ax1.set_title("Verteilung der Episode-Rewards")
     ax1.set_xlabel("Reward")
@@ -106,7 +87,6 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     ax1.legend()
     ax1.grid(True, alpha=0.3)
 
-    # Erfolgsrate über Zeit (kumulativ)
     cumulative_success = np.cumsum(success_per_episode) / np.arange(1, len(success_per_episode) + 1)
     ax2.plot(cumulative_success, color='green', linewidth=2)
     ax2.set_title("Kumulative Erfolgsrate")
@@ -114,7 +94,6 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     ax2.set_ylabel("Erfolgsrate")
     ax2.grid(True, alpha=0.3)
 
-    # Reward-Entwicklung (letzte X Episoden)
     display_episodes = min(1000, len(rewards_per_episode) // 2)
     ax3.plot(rewards_per_episode[-display_episodes:], alpha=0.6, color='blue')
     ax3.set_title(f"Reward-Entwicklung (letzte {display_episodes} Episoden)")
@@ -122,7 +101,6 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     ax3.set_ylabel("Reward")
     ax3.grid(True, alpha=0.3)
 
-    # Erfolg vs. Misserfolg (Balkendiagramm)
     total_success = sum(success_per_episode)
     total_failure = len(success_per_episode) - total_success
     ax4.bar(['Erfolg', 'Misserfolg'], [total_success, total_failure],
@@ -130,7 +108,6 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     ax4.set_title("Erfolg vs. Misserfolg")
     ax4.set_ylabel("Anzahl Episoden")
 
-    # Prozentwerte auf Balken
     for i, v in enumerate([total_success, total_failure]):
         percentage = (v / len(success_per_episode)) * 100
         ax4.text(i, v + len(success_per_episode) * 0.01, f'{v}\n({percentage:.1f}%)',
@@ -139,7 +116,6 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
     plt.suptitle(f"Trainingsstatistiken ({env_mode}-Modus)", fontsize=16)
     plt.tight_layout()
 
-    # PDF Export
     if EXPORT_PDF:
         filename = f"{EXPORT_PATH_QL}/train_statistics_{env_mode}.pdf"
         plt.savefig(filename, format='pdf', bbox_inches='tight')
@@ -155,11 +131,8 @@ def create_training_statistics(rewards_per_episode, success_per_episode, env_mod
 # Evaluation Visualizations (aus evaluate_policy.py)
 # ============================================================================
 
-# Visualisierung der Erfolgsrate als Balkendiagramm
 def create_success_plot(results_solved, env_mode):
     plt.figure(figsize=(8, 5))
-
-    # Zuordnung der Farben
     colors = []
     labels = list(results_solved.keys())
     for label in labels:
@@ -180,7 +153,6 @@ def create_success_plot(results_solved, env_mode):
 
     plt.tight_layout()
 
-    # PDF Export
     if EXPORT_PDF:
         plt.savefig(f"{EXPORT_PATH_QL}/evaluate_policy_success_rate.pdf", format='pdf', bbox_inches='tight')
         print(f"Success Rate Plot gespeichert: {EXPORT_PATH_QL}/evaluate_policy_success_rate.pdf")
@@ -188,7 +160,6 @@ def create_success_plot(results_solved, env_mode):
     plt.show()
 
 
-# Visualisierung der Reward-Verteilung als Histogramm
 def create_reward_histogram(rewards_all, env_mode):
     avg_reward = np.mean(rewards_all)
 
@@ -202,7 +173,6 @@ def create_reward_histogram(rewards_all, env_mode):
     plt.legend()
     plt.tight_layout()
 
-    # PDF Export
     if EXPORT_PDF:
         plt.savefig(f"{EXPORT_PATH_QL}/evaluate_policy_reward_histogram.pdf", format='pdf', bbox_inches='tight')
         print(f"Reward Histogram gespeichert: {EXPORT_PATH_QL}/evaluate_policy_reward_histogram.pdf")
@@ -214,7 +184,6 @@ def create_reward_histogram(rewards_all, env_mode):
 # Comparison Visualizations (aus legacy_compare_scenarios.py)
 # ============================================================================
 
-# Erstellung der Vergleichstabelle
 def create_comparison_table(all_metrics):
     data = []
     for scenario_name, metrics in all_metrics.items():
@@ -239,7 +208,6 @@ def create_comparison_table(all_metrics):
     return df
 
 
-# Visualisierung des Erfolgsraten-Vergleichs
 def create_success_rate_comparison(all_metrics):
     scenarios = [name for name, metrics in all_metrics.items() if metrics is not None]
     success_rates = [metrics["success_rate"] * 100 for name, metrics in all_metrics.items() if metrics is not None]
@@ -265,7 +233,6 @@ def create_success_rate_comparison(all_metrics):
     plt.show()
 
 
-# Erstellung des gestapelten Balkendiagramms für Terminierungsarten
 def create_stacked_failure_chart(all_metrics):
     scenarios = []
     success_rates = []
