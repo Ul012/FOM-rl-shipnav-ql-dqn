@@ -56,7 +56,7 @@ def create_combined_curve_pdf(scenarios, export_dir, metric="learning"):
         plt.plot(smoothed, label=label, linewidth=1.2, alpha=0.8)
         npy_files_to_delete.append(path)
 
-    title = "Learning Curve" if metric == "learning" else "Success Rate Curve"
+    title = "Learning Curve (Q-Learning)" if metric == "learning" else "Success Rate Curve (Q-Learning)"
     ylabel = "Reward" if metric == "learning" else "Success Rate"
 
     # Referenzlinie

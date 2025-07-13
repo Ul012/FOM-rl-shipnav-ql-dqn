@@ -112,7 +112,7 @@ DQN_MODEL_PATH_TEMPLATE = "dqn_model_{}.pth"  # Format: dqn_model_static.pth
 
 # Export-Pfade
 EXPORT_PATH_QL = "exports"
-EXPORT_PATH_DQN = "src/dqn/exports"
+EXPORT_PATH_DQN = "exports"
 EXPORT_PATH_COMP = "src/comparison/exports"
 
 # Erstelle Export-Verzeichnisse beim Import

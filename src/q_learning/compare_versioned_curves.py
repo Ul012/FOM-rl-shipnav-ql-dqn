@@ -56,8 +56,20 @@ def plot_metric_comparison(metric_name, output_filename):
         for i in range(len(scenarios), len(axes)):
             fig.delaxes(axes[i])
 
-    fig.suptitle(f"Vergleich: {metric_name.replace('_', ' ').capitalize()} (v1 vs. v2)", fontsize=16)
-    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    # tight_layout aufrufen (Platz zwischen Untertitel und Plots)
+    fig.tight_layout(rect=[0, 0, 1, 0.88])
+
+    # Haupttitel
+    title_map = {
+        "learning_curve": "Learning Curves (Q-Learning)",
+        "success_curve": "Success Rate Curves (Q-Learning)"
+    }
+    main_title = title_map.get(metric_name, metric_name.replace('_', ' ').capitalize())
+    fig.suptitle(main_title, fontsize=16, y=0.95)
+
+    # Untertitel mit kleinerer Schrift - näher ran
+    subtitle = "Hyperparameter Setup v1 vs. v2"
+    fig.text(0.5, 0.91, subtitle, ha='center', va='center', fontsize=12)
 
     save_path = os.path.join(output_dir, output_filename)
     plt.savefig(save_path)

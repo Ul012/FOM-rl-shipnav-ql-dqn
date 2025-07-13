@@ -5,12 +5,14 @@ import os
 import time
 import pandas as pd
 from typing import Dict, List, Any
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Projektstruktur für Imports anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.dqn.train import DQNTrainer
-from src.shared.config import EPISODES, EXPORT_PATH_DQN
+from src.shared.config import SETUP_NAME, EPISODES, EXPORT_PATH_DQN
 
 
 class DQNScenarioRunner:
@@ -105,7 +107,7 @@ class DQNScenarioRunner:
                 print(f"Dauer: {run_results['duration'] / 60:.1f} Minuten")
 
                 # Plot für diesen Run erstellen
-                plot_path = os.path.join(EXPORT_PATH_DQN, f'dqn_training_{scenario}_run{run + 1}.pdf')
+                plot_path = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, f'{SETUP_NAME}_dqn_training_{scenario}_run{run + 1}.pdf')
                 os.makedirs(os.path.dirname(plot_path), exist_ok=True)
                 trainer.plot_training_results(train_results, plot_path)
 
@@ -196,15 +198,17 @@ class DQNScenarioRunner:
 
     def _save_results(self, all_results: Dict, summary_data: List[Dict]):
         """Speichert Ergebnisse in Dateien."""
-        # CSV mit Zusammenfassung
+        # CSV mit Zusammenfassung (im SETUP_NAME Unterordner)
+        export_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME)
+        os.makedirs(export_dir, exist_ok=True)
+
         df = pd.DataFrame(summary_data)
-        csv_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_summary.csv')
-        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+        csv_path = os.path.join(export_dir, 'dqn_all_scenarios_summary.csv')
         df.to_csv(csv_path, index=False)
         print(f"\nZusammenfassung gespeichert: {csv_path}")
 
         # Detaillierte Statistiken
-        stats_path = os.path.join(EXPORT_PATH_DQN, 'dqn_all_scenarios_stats.txt')
+        stats_path = os.path.join(export_dir, 'dqn_all_scenarios_stats.txt')
         with open(stats_path, 'w') as f:
             f.write("DQN ALL SCENARIOS STATISTICS\n")
             f.write("=" * 50 + "\n\n")
@@ -230,9 +234,6 @@ class DQNScenarioRunner:
         Erstellt kombinierte Learning- und Success-Kurven für alle Szenarien.
         IDENTISCH zur Q-Learning Version.
         """
-        import matplotlib.pyplot as plt
-        import numpy as np
-
         # Kombinierte Learning Curve (Rewards)
         self._create_combined_learning_curve(all_results)
 
@@ -241,13 +242,10 @@ class DQNScenarioRunner:
 
     def _create_combined_learning_curve(self, all_results: Dict):
         """Erstellt kombinierte Learning Curve für alle Szenarien - IDENTISCH zu Q-Learning"""
-        import matplotlib.pyplot as plt
-        import numpy as np
 
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(10, 6))
 
         # Farben für Szenarien - IDENTISCHE Reihenfolge und Farben wie Q-Learning
-        colors = ['blue', 'orange', 'green', 'red', 'purple']
         scenario_names = ['static', 'random_start', 'random_goal', 'random_obstacles', 'container']
 
         for i, scenario in enumerate(scenario_names):
@@ -259,31 +257,30 @@ class DQNScenarioRunner:
                     first_run = scenario_results[0]
                     episode_rewards = first_run['training']['episode_rewards']
 
-                    # Gleitender Durchschnitt für Glättung
-                    window_size = max(1, len(episode_rewards) // 20)
+                    # Gleitender Durchschnitt für Glättung - IDENTISCH zu Q-Learning
+                    window_size = 50
                     if len(episode_rewards) >= window_size:
                         smoothed_rewards = np.convolve(episode_rewards, np.ones(window_size) / window_size,
                                                        mode='valid')
-                        x_vals = range(window_size - 1, len(episode_rewards))
                     else:
                         smoothed_rewards = episode_rewards
-                        x_vals = range(len(episode_rewards))
 
-                    plt.plot(x_vals, smoothed_rewards, color=colors[i],
-                             label=scenario.replace('_', ' ').title(), linewidth=2)
+                    label = scenario.replace("_", " ").capitalize()
+                    plt.plot(smoothed_rewards, label=label, linewidth=1.2, alpha=0.8)
 
-        plt.title('Learning Curve', fontsize=16)
-        plt.xlabel('Episode', fontsize=14)
-        plt.ylabel('Reward', fontsize=14)
-        plt.legend(fontsize=12)
-        plt.grid(True, alpha=0.3)
-        plt.tight_layout()
+        plt.title('Learning Curve (DQN)', fontweight='bold')
+        plt.xlabel("Episode", fontweight='bold')
+        plt.ylabel("Reward", fontweight='bold')
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.tight_layout(rect=[0, 0, 0.95, 1])
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        # plt.tight_layout()
 
         # Speichern im combined Unterordner - IDENTISCH zu Q-Learning
-        combined_dir = os.path.join(EXPORT_PATH_DQN, 'combined')
+        combined_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, 'combined')
         os.makedirs(combined_dir, exist_ok=True)
 
-        save_path = os.path.join(combined_dir, 'train_learning_curve_combined.pdf')
+        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_train_learning_curve_combined.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Kombinierte Learning Curve gespeichert: {save_path}")
         plt.close()
@@ -293,10 +290,9 @@ class DQNScenarioRunner:
         import matplotlib.pyplot as plt
         import numpy as np
 
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(10, 6))
 
         # Farben für Szenarien - IDENTISCHE Reihenfolge und Farben wie Q-Learning
-        colors = ['blue', 'orange', 'green', 'red', 'purple']
         scenario_names = ['static', 'random_start', 'random_goal', 'random_obstacles', 'container']
 
         for i, scenario in enumerate(scenario_names):
@@ -311,31 +307,28 @@ class DQNScenarioRunner:
                     success_values = [1 if success else 0 for success in episode_successes]
 
                     # Gleitender Durchschnitt für Success Rate
-                    window_size = max(1, len(success_values) // 20)
+                    window_size = 50
                     if len(success_values) >= window_size:
-                        smoothed_success = np.convolve(success_values, np.ones(window_size) / window_size,
-                                                       mode='valid') * 100
-                        x_vals = range(window_size - 1, len(success_values))
+                        smoothed_success = np.convolve(success_values, np.ones(window_size) / window_size, mode='valid')
                     else:
-                        smoothed_success = [s * 100 for s in success_values]
-                        x_vals = range(len(success_values))
+                        smoothed_success = success_values
 
-                    plt.plot(x_vals, smoothed_success, color=colors[i],
-                             label=scenario.replace('_', ' ').title(), linewidth=2)
+                    label = scenario.replace("_", " ").capitalize()
+                    plt.plot(smoothed_success, label=label, linewidth=1.2, alpha=0.8)
 
-        plt.title('Success Rate Over Training', fontsize=16)
-        plt.xlabel('Episode', fontsize=14)
-        plt.ylabel('Success Rate (%)', fontsize=14)
-        plt.legend(fontsize=12)
-        plt.grid(True, alpha=0.3)
-        plt.ylim(0, 100)  # Success Rate immer 0-100%
-        plt.tight_layout()
+        plt.title('Success Rate Curve (DQN)', fontweight='bold')
+        plt.xlabel("Episode", fontweight='bold')
+        plt.ylabel("Success Rate", fontweight='bold')
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.tight_layout(rect=[0, 0, 0.95, 1])
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        # plt.tight_layout()
 
         # Speichern im combined Unterordner - IDENTISCH zu Q-Learning
-        combined_dir = os.path.join(EXPORT_PATH_DQN, 'combined')
+        combined_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, 'combined')
         os.makedirs(combined_dir, exist_ok=True)
 
-        save_path = os.path.join(combined_dir, 'train_success_curve_combined.pdf')
+        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_train_success_curve_combined.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Kombinierte Success Curve gespeichert: {save_path}")
         plt.close()

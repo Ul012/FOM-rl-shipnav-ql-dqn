@@ -13,6 +13,7 @@ from src.dqn.deep_q_agent import DeepQLearningAgent
 from src.shared.envs.grid_environment import GridEnvironment
 from src.shared.envs.container_environment import ContainerShipEnv
 from src.shared.config import (
+    SETUP_NAME,
     EPISODES,
     MAX_STEPS,
     EVAL_EPISODES,
@@ -143,7 +144,21 @@ class DQNTrainer:
         model_path = get_dqn_model_path(self.env_mode)
         self.agent.save_model(model_path)
 
-        return {
+        # Export-Verzeichnis mit SETUP_NAME erstellen (analog zu Q-Learning)
+        export_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME)
+        os.makedirs(export_dir, exist_ok=True)
+
+        # Speichere .npy-Dateien für Vergleichsanalyse (analog zu Q-Learning)
+        episode_rewards_array = np.array(episode_rewards)
+        episode_successes_array = np.array([int(s) for s in episode_successes])
+
+        np.save(os.path.join(export_dir, f"learning_curve_{self.env_mode}.npy"), episode_rewards_array)
+        np.save(os.path.join(export_dir, f"success_curve_{self.env_mode}.npy"), episode_successes_array)
+
+        print(f"[DEBUG] Speichere learning_curve_{self.env_mode}.npy nach: {export_dir}")
+        print(f"[DEBUG] Speichere success_curve_{self.env_mode}.npy nach: {export_dir}")
+
+        return{
             'env_mode': self.env_mode,
             'episodes': episodes,
             'success_rate': success_rate,
@@ -363,7 +378,7 @@ def main():
 
         # Plots erstellen
         if not args.no_plot:
-            plot_path = os.path.join(EXPORT_PATH_DQN, f'dqn_training_{args.mode}.pdf')
+            plot_path = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, f'{SETUP_NAME}_dqn_training_{args.mode}.pdf')
             os.makedirs(os.path.dirname(plot_path), exist_ok=True)
             trainer.plot_training_results(train_results, plot_path)
 
