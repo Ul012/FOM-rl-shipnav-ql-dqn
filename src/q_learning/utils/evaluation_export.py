@@ -5,6 +5,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from src.shared.config import SETUP_NAME
 
 def export_results_to_csv(results, output_path="exports/evaluation_summary.csv"):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -74,7 +75,7 @@ def create_combined_curve_pdf(scenarios, export_dir, metric="learning"):
     # PDF speichern in exports/combined
     combined_dir = os.path.join(export_dir, "combined")
     os.makedirs(combined_dir, exist_ok=True)
-    filename_out = os.path.join(combined_dir, f"train_{metric}_curve_combined.pdf")
+    filename_out = os.path.join(combined_dir, f"{SETUP_NAME}_train_{metric}_curve_combined.pdf")
 
     with PdfPages(filename_out) as pdf:
         pdf.savefig()
@@ -82,9 +83,9 @@ def create_combined_curve_pdf(scenarios, export_dir, metric="learning"):
 
     print(f"📈 Kombinierte {title} exportiert: {filename_out}")
 
-    # Temporäre .npy-Dateien löschen
-    for file_path in npy_files_to_delete:
-        try:
-            os.remove(file_path)
-        except Exception as e:
-            print(f"⚠️  Fehler beim Löschen von {file_path}: {e}")
+    # Temporäre .npy-Dateien löschen - Auskommentiert, da npy Dateien für compare_versioned_curves Visualierung benötigt werden
+    # for file_path in npy_files_to_delete:
+    #    try:
+    #        os.remove(file_path)
+    #    except Exception as e:
+    #        print(f"⚠️  Fehler beim Löschen von {file_path}: {e}")

@@ -151,6 +151,8 @@ def train_agent(scenario):
     print(f"[DEBUG] Szenario: {scenario}")
     print(f"[DEBUG] Länge rewards_per_episode: {len(rewards_per_episode)}")
     print(f"[DEBUG] Länge success_per_episode: {len(success_per_episode)}")
+    print(f"[DEBUG] Speichere learning_curve_{scenario}.npy nach: {os.path.join(export_dir, f'learning_curve_{scenario}.npy')}")
+    print(f"[DEBUG] Speichere success_curve_{scenario}.npy nach: {os.path.join(export_dir, f'success_curve_{scenario}.npy')}")
 
     np.save(os.path.join(export_dir, f"learning_curve_{scenario}.npy"), rewards_array)
     np.save(os.path.join(export_dir, f"success_curve_{scenario}.npy"), success_array)

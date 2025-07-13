@@ -22,12 +22,12 @@ def setup_export():
 def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=True, export_dir=None):
     export_dir = export_dir or EXPORT_PATH_QL
     plt.figure(figsize=(12, 6))
-    plt.plot(rewards_per_episode, alpha=0.3, label="Raw Reward", color='blue')
+    plt.plot(rewards_per_episode, alpha=0.3, label=f"{SETUP_NAME.upper()} Raw Reward", color='blue')
 
     if len(rewards_per_episode) >= window_size:
         moving_avg = np.convolve(rewards_per_episode, np.ones(window_size) / window_size, mode='valid')
         plt.plot(range(window_size - 1, len(rewards_per_episode)), moving_avg,
-                 label=f"Moving Average ({window_size})", color='red', linewidth=2)
+                 label=f"{SETUP_NAME.upper()} Moving Average ({window_size})", color='red', linewidth=2)
 
     plt.xlabel("Episode")
     plt.ylabel("Gesamtreward")
@@ -51,13 +51,13 @@ def create_learning_curve(rewards_per_episode, env_mode, window_size=20, show=Tr
 def create_success_curve(success_per_episode, env_mode, show=True, export_dir=None):
     export_dir = export_dir or EXPORT_PATH_QL
     plt.figure(figsize=(12, 4))
-    plt.plot(success_per_episode, label="Ziel erreicht", color='green', alpha=0.7, linewidth=1)
+    plt.plot(success_per_episode, label=f"{SETUP_NAME.upper()} Ziel erreicht", color='green', alpha=0.7, linewidth=1)
 
     window_size = min(max(10, EPISODES // 20), len(success_per_episode) // 10)
     if len(success_per_episode) >= window_size:
         success_moving_avg = np.convolve(success_per_episode, np.ones(window_size) / window_size, mode='valid')
         plt.plot(range(window_size - 1, len(success_per_episode)), success_moving_avg,
-                 label=f"Erfolgsrate MA ({window_size})", color='darkgreen', linewidth=2)
+                 label=f"{SETUP_NAME.upper()} Erfolgsrate MA ({window_size})", color='darkgreen', linewidth=2)
 
     plt.xlabel("Episode")
     plt.ylabel("Erfolg (0/1)")

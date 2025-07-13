@@ -13,7 +13,7 @@ from datetime import datetime
 # Projektstruktur für Import anpassen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.shared.config import SETUP_NAME
+from src.shared.config import EXPORT_PATH_QL, SETUP_NAME
 from src.shared.config_utils import prepare_export_dirs
 prepare_export_dirs()
 
@@ -75,6 +75,7 @@ def run_training_for_scenario(scenario_name, scenario_config):
         env["ENV_MODE"] = scenario_config["env_mode"]
         env["EXPORT_PDF"] = "False" if not SHOW_VISUALIZATIONS else "True"
         env["SHOW_VISUALIZATIONS"] = "False" if not SHOW_VISUALIZATIONS else "True"
+        env["SETUP_NAME"] = SETUP_NAME
 
         # Aufruf des Trainingsscripts mit Übergabe der Konfiguration
         result = subprocess.run(
@@ -130,6 +131,7 @@ def train_all_scenarios():
     for i, (scenario_name, scenario_config) in enumerate(SCENARIOS.items(), 1):
         print(f"\n[{i}/{len(SCENARIOS)}] Nächstes Szenario: {scenario_name}")
         success, stdout = run_training_for_scenario(scenario_name, scenario_config)
+
         results[scenario_name] = success
         time.sleep(2)
 
@@ -165,7 +167,9 @@ def train_all_scenarios():
         print(f"{scenario_name:<20} {status:<15} {q_table_status}")
 
     # Export als CSV-Datei
-    export_results_to_csv(scenario_results)
+    csv_path = os.path.join(EXPORT_PATH_QL, SETUP_NAME, "evaluation_summary.csv")
+    export_results_to_csv(scenario_results, output_path=csv_path)
+
     return scenario_results
 
 # ============================================================================
