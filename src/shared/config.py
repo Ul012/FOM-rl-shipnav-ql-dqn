@@ -8,7 +8,7 @@ from pathlib import Path
 # ============================================================================
 
 # Hyperparameter-Setup
-SETUP_NAME = "v2"  # oder "v2" # wird für Exportverzeichnisse verwendet
+SETUP_NAME = "v2"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
 
 # Grid Constants
 GRID_SIZE = 5
@@ -53,7 +53,7 @@ REWARDS = {
 # Training Parameter (Gemeinsam)
 # ============================================================================
 
-GAMMA = 0.95  # Diskontierungsfaktor
+GAMMA = 0.95  # Diskontierungsfaktor. Mögliche Alternative: GAMMA = 0.99 # stärkerer Fokus auf Langzeit
 EPISODES = 500  # Trainings-Episoden
 MAX_STEPS = 100  # Max. Schritte pro Episode
 LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
@@ -62,7 +62,7 @@ LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = True  # Standard: festes Epsilon, optional: Decay aktivieren
+USE_EPSILON_DECAY = True  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon
@@ -77,7 +77,7 @@ EVAL_MAX_STEPS = 50  # Max. Schritte pro Episode in Evaluation - beide
 # ============================================================================
 
 # Q-Learning Hyperparameter
-QL_ALPHA = 0.1  # Lernrate (learning rate) - nur Q-Learning
+QL_ALPHA = 0.1  # Lernrate (learning rate) - nur Q-Learning. Mögliche Alternative: QL_ALPHA = 0.05 # geringere Lernrate
 
 # ============================================================================
 # DQN Parameter
@@ -113,7 +113,7 @@ DQN_MODEL_PATH_TEMPLATE = "dqn_model_{}.pth"  # Format: dqn_model_static.pth
 # Export-Pfade
 EXPORT_PATH_QL = "exports"
 EXPORT_PATH_DQN = "exports"
-EXPORT_PATH_COMP = "src/comparison/exports"
+EXPORT_PATH_COMP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "comparison", "exports")
 
 # Erstelle Export-Verzeichnisse beim Import
 for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:
