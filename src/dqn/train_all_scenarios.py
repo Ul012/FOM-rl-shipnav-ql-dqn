@@ -280,7 +280,7 @@ class DQNScenarioRunner:
         combined_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, 'combined')
         os.makedirs(combined_dir, exist_ok=True)
 
-        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_train_learning_curve_combined.pdf')
+        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_scenario-comparison_learning_curve.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Kombinierte Learning Curve gespeichert: {save_path}")
         plt.close()
@@ -328,7 +328,7 @@ class DQNScenarioRunner:
         combined_dir = os.path.join(EXPORT_PATH_DQN, SETUP_NAME, 'combined')
         os.makedirs(combined_dir, exist_ok=True)
 
-        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_train_success_curve_combined.pdf')
+        save_path = os.path.join(combined_dir, f'{SETUP_NAME}_scenario-comparison_success_curve.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Kombinierte Success Curve gespeichert: {save_path}")
         plt.close()

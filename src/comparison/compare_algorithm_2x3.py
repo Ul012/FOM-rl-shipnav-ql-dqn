@@ -14,7 +14,7 @@ from dataclasses import dataclass
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.shared.config import (
-    SEED, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP,
+    SEED, SETUP_NAME, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP,
     GAMMA, QL_ALPHA, QL_EPSILON_FIXED, DQN_EPSILON_FIXED, DQN_LEARNING_RATE,
     EPSILON_START, EPSILON_END, EPSILON_DECAY
 )
@@ -296,7 +296,7 @@ class AlgorithmComparison:
             axes[1, i].grid(True, alpha=0.3)
 
         plt.tight_layout()
-        save_path = os.path.join(EXPORT_PATH_COMP, 'algorithm_comparison_2x3.pdf')
+        save_path = os.path.join(EXPORT_PATH_COMP, f'{SETUP_NAME}_algorithm_comparison_2x3_Visual0.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"2x3 Vergleich gespeichert: {save_path}")
         plt.close()

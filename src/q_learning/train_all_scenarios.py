@@ -181,5 +181,6 @@ if __name__ == "__main__":
 
     # Erzeugung kombinierter PDF-Grafiken für Lernverlauf und Erfolgsquote
     scenario_names = [result["name"] for result in scenario_results]
+    export_dir = os.path.join(os.path.dirname(__file__), "exports", SETUP_NAME)
     create_combined_curve_pdf(scenario_names, export_dir=f"exports/{SETUP_NAME}", metric="learning")
     create_combined_curve_pdf(scenario_names, export_dir=f"exports/{SETUP_NAME}", metric="success")

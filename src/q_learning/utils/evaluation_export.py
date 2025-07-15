@@ -75,7 +75,7 @@ def create_combined_curve_pdf(scenarios, export_dir, metric="learning"):
     # PDF speichern in exports/combined
     combined_dir = os.path.join(export_dir, "combined")
     os.makedirs(combined_dir, exist_ok=True)
-    filename_out = os.path.join(combined_dir, f"{SETUP_NAME}_train_{metric}_curve_combined.pdf")
+    filename_out = os.path.join(combined_dir, f"{SETUP_NAME}_scenario-comparison_{metric}_curve.pdf")
 
     with PdfPages(filename_out) as pdf:
         pdf.savefig()

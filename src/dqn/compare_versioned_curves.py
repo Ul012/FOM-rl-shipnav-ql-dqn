@@ -97,6 +97,6 @@ def plot_metric_comparison(metric_name, output_filename):
 
 if __name__ == "__main__":
     print("Erstelle DQN Version-Vergleichsplots...")
-    plot_metric_comparison("learning_curve", "dqn_comparison_learning_curves.pdf")
-    plot_metric_comparison("success_curve", "dqn_comparison_success_curves.pdf")
+    plot_metric_comparison("learning_curve", "dqn_v1v2_comparison_learning_curves.pdf")
+    plot_metric_comparison("success_curve", "dqn_v1v2_comparison_success_curves.pdf")
     print("DQN Versionsvergleich abgeschlossen!")

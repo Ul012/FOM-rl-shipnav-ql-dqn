@@ -77,5 +77,5 @@ def plot_metric_comparison(metric_name, output_filename):
     print(f"✅ Vergleichsplot gespeichert: {save_path}")
 
 if __name__ == "__main__":
-    plot_metric_comparison("learning_curve", "comparison_learning_curves.pdf")
-    plot_metric_comparison("success_curve", "comparison_success_curves.pdf")
+    plot_metric_comparison("learning_curve", "QL_v1v2_comparison_learning_curves.pdf")
+    plot_metric_comparison("success_curve", "QL_v1v2_comparison_success_curves.pdf")

@@ -113,7 +113,9 @@ DQN_MODEL_PATH_TEMPLATE = "dqn_model_{}.pth"  # Format: dqn_model_static.pth
 # Export-Pfade
 EXPORT_PATH_QL = "exports"
 EXPORT_PATH_DQN = "exports"
-EXPORT_PATH_COMP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "comparison", "exports")
+# EXPORT_PATH_QL = os.path.join(os.path.dirname(os.path.dirname(__file__)), "q_learning", "exports", SETUP_NAME)
+# EXPORT_PATH_DQN = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dqn", "exports", SETUP_NAME)
+EXPORT_PATH_COMP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "comparison", "exports", SETUP_NAME)
 
 # Erstelle Export-Verzeichnisse beim Import
 for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:
