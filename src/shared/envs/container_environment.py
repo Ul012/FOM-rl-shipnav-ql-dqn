@@ -16,7 +16,7 @@ from gymnasium import spaces
 
 # Lokale Module
 from src.shared.config import (REWARDS, GRID_SIZE, N_ACTIONS, CONTAINER_START_POS,
-                               CONTAINER_OBSTACLES, DEBUG_MODE, LOOP_THRESHOLD)
+                               CONTAINER_OBSTACLES, DEBUG_MODE, LOOP_THRESHOLD, MAX_STEPS)
 
 
 # ============================================================================
@@ -31,7 +31,7 @@ class ContainerShipEnv(gym.Env):
         self.grid_size = GRID_SIZE  # Aus config statt hardcoded
         self.start_pos = CONTAINER_START_POS  # Aus config
         self.obstacles = CONTAINER_OBSTACLES  # Aus config
-        self.max_steps = 300
+        self.max_steps = MAX_STEPS
 
         self.observation_space = spaces.MultiDiscrete([self.grid_size, self.grid_size, 2])
         self.action_space = spaces.Discrete(N_ACTIONS)  # Aus config statt hardcoded
