@@ -8,7 +8,7 @@ from pathlib import Path
 # ============================================================================
 
 # Hyperparameter-Setup
-SETUP_NAME = "v2"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
+SETUP_NAME = "v1"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
 
 # Grid Constants
 GRID_SIZE = 5
@@ -56,13 +56,13 @@ REWARDS = {
 GAMMA = 0.95  # Diskontierungsfaktor. Mögliche Alternative: GAMMA = 0.99 # stärkerer Fokus auf Langzeit
 EPISODES = 500  # Trainings-Episoden
 MAX_STEPS = 100  # Max. Schritte pro Episode
-LOOP_THRESHOLD = 10  # Schleifenwiederholungen für Abbruch (initial: 6)
+LOOP_THRESHOLD = 3  # Schleifenwiederholungen für Abbruch
 
 # Exploration Parameter
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = True  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
+USE_EPSILON_DECAY = False  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon

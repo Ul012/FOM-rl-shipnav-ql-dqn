@@ -16,7 +16,7 @@ from gymnasium import spaces
 
 # Lokale Module
 from src.shared.config import (REWARDS, GRID_SIZE, N_ACTIONS, CONTAINER_START_POS,
-                               CONTAINER_OBSTACLES, DEBUG_MODE)
+                               CONTAINER_OBSTACLES, DEBUG_MODE, LOOP_THRESHOLD)
 
 
 # ============================================================================
@@ -45,7 +45,7 @@ class ContainerShipEnv(gym.Env):
         self.container_loaded = False
         self.steps = 0
         self.visited_states = {}
-        self.max_loop_count = 3
+        self.max_loop_count = LOOP_THRESHOLD
         self.successful_dropoffs = 0
 
     # ============================================================================

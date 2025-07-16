@@ -16,7 +16,7 @@ from gymnasium import spaces
 
 # Lokale Module
 from src.shared.config import (REWARDS, GRID_SIZE, N_ACTIONS, DEFAULT_START_POS,
-                               DEFAULT_GOAL_POS, DEFAULT_OBSTACLES, DEBUG_MODE)
+                               DEFAULT_GOAL_POS, DEFAULT_OBSTACLES, DEBUG_MODE, LOOP_THRESHOLD)
 
 
 # ============================================================================
@@ -34,7 +34,7 @@ class GridEnvironment(gym.Env):
         self.action_space = spaces.Discrete(N_ACTIONS)  # Aus config statt hardcoded
 
         self.max_steps = 50
-        self.loop_threshold = 6
+        self.loop_threshold = LOOP_THRESHOLD
         self.np_random = None
 
         self._initialize_environment()
