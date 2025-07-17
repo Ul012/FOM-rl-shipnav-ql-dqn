@@ -8,7 +8,7 @@ from pathlib import Path
 # ============================================================================
 
 # Hyperparameter-Setup
-SETUP_NAME = "v1"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
+SETUP_NAME = "v2"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
 
 # Grid Constants
 GRID_SIZE = 5
@@ -62,7 +62,7 @@ LOOP_THRESHOLD = 3  # Schleifenwiederholungen für Abbruch
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = False  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
+USE_EPSILON_DECAY = True  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon
@@ -115,7 +115,7 @@ EXPORT_PATH_QL = "exports"
 EXPORT_PATH_DQN = "exports"
 # EXPORT_PATH_QL = os.path.join(os.path.dirname(os.path.dirname(__file__)), "q_learning", "exports", SETUP_NAME)
 # EXPORT_PATH_DQN = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dqn", "exports", SETUP_NAME)
-EXPORT_PATH_COMP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "comparison", "exports", SETUP_NAME)
+EXPORT_PATH_COMP = os.path.join(os.path.dirname(os.path.dirname(__file__)), "comparison", "exports")
 
 # Erstelle Export-Verzeichnisse beim Import
 for _path in [EXPORT_PATH_DQN, EXPORT_PATH_QL, EXPORT_PATH_COMP]:

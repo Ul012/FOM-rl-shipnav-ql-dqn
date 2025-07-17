@@ -14,11 +14,10 @@ from dataclasses import dataclass
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.shared.config import (
-    SEED, SETUP_NAME, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP,
-    GAMMA, QL_ALPHA, QL_EPSILON_FIXED, DQN_EPSILON_FIXED, DQN_LEARNING_RATE,
-    EPSILON_START, EPSILON_END, EPSILON_DECAY
+    SEED, SETUP_NAME, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP, EXPORT_PATH_QL, EXPORT_PATH_DQN,
+    GAMMA, QL_ALPHA, QL_EPSILON_FIXED, DQN_EPSILON_FIXED, DQN_LEARNING_RATE, EPSILON_START, EPSILON_END, EPSILON_DECAY
 )
-from src.shared.config_utils import get_dqn_model_path, get_q_table_path
+from src.shared.config_utils import get_dqn_model_path, get_q_table_path, get_export_path
 
 
 @dataclass
@@ -188,26 +187,60 @@ class AlgorithmComparison:
         self.colors = {'Q-Learning': '#1f77b4', 'DQN': '#ff7f0e'}
 
     def run_comparison(self, num_runs: int = 3) -> List[Dict]:
-        print("🎯 ALGORITHMUS-VERGLEICH")
+        print("🎯 ALGORITHMUS-VERGLEICH (basierend auf train_all_scenarios)")
+
+        # Absolute Pfade basierend auf aktuellem SETUP_NAME
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+
+        ql_csv = os.path.join(project_root, "src", "q_learning", "exports", SETUP_NAME, "evaluation_summary.csv")
+        dqn_csv = os.path.join(project_root, "src", "dqn", "exports", SETUP_NAME, "dqn_all_scenarios_summary.csv")
+
         comparison_data = []
 
-        for scenario in self.config.scenarios:
-            print(f"\nSzenario: {scenario}")
-            for algorithm_name, evaluator in self.evaluators.items():
-                if not evaluator.is_model_available(scenario):
-                    print(f"❌ Modell für {algorithm_name}: {scenario} nicht gefunden")
-                    continue
+        # ✅ DEBUG: Was ist in den CSVs?
+        print(f"Q-Learning CSV: {ql_csv}")
+        print(f"DQN CSV: {dqn_csv}")
 
-                for run in range(num_runs):
-                    result = evaluator.evaluate(scenario, self.config.eval_episodes, run)
-                    comparison_data.append({
-                        'algorithm': algorithm_name,
-                        'scenario': scenario,
-                        'run': run + 1,
-                        'success_rate': result.success_rate,
-                        'avg_steps': result.average_steps,
-                        'avg_reward': result.average_reward
-                    })
+        if os.path.exists(ql_csv):
+            ql_df = pd.read_csv(ql_csv)
+            print(f"✅ Q-Learning Spalten: {list(ql_df.columns)}")
+            print(f"   Erste Zeile: {ql_df.iloc[0].to_dict()}")
+
+            for _, row in ql_df.iterrows():
+                comparison_data.append({
+                    'algorithm': 'Q-Learning',
+                    'scenario': row['Szenario'],
+                    'run': 1,
+                    'success_rate': row['Success Rate (%)'],
+                    'avg_steps': row['Avg. Steps'],
+                    'avg_reward': row['Avg. Reward']
+                })
+        else:
+            print(f"❌ Q-Learning CSV nicht gefunden!")
+
+        if os.path.exists(dqn_csv):
+            dqn_df = pd.read_csv(dqn_csv)
+            print(f"✅ DQN Spalten: {list(dqn_df.columns)}")
+            print(f"   Erste Zeile: {dqn_df.iloc[0].to_dict()}")
+
+            for _, row in dqn_df.iterrows():
+                comparison_data.append({
+                    'algorithm': 'DQN',
+                    'scenario': row['scenario'],
+                    'run': 1,
+                    'success_rate': row['eval_success_rate'],  # ✅ Korrekte Spalte
+                    'avg_steps': row['eval_avg_steps'],  # ✅ Korrekte Spalte
+                    'avg_reward': row['eval_avg_reward']  # ✅ Korrekte Spalte
+                })
+        else:
+            print(f"❌ DQN CSV nicht gefunden!")
+
+        print(f"📊 Comparison Data: {len(comparison_data)} Einträge")
+        if comparison_data:
+            print(f"   Beispiel: {comparison_data[0]}")
+        else:
+            print("❌ Keine Daten gefunden - Abbruch!")
+            return []
 
         self._create_visualization(comparison_data)
         self._save_results(comparison_data)
@@ -296,14 +329,14 @@ class AlgorithmComparison:
             axes[1, i].grid(True, alpha=0.3)
 
         plt.tight_layout()
-        save_path = os.path.join(EXPORT_PATH_COMP, f'{SETUP_NAME}_algorithm_comparison_2x3_Visual0.pdf')
+        save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}_algorithm_comparison_2x3_Visual0.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"2x3 Vergleich gespeichert: {save_path}")
         plt.close()
 
     def _save_results(self, comparison_data: List[Dict]):
         df = pd.DataFrame(comparison_data)
-        csv_path = os.path.join(EXPORT_PATH_COMP, 'algorithm_comparison_2x3.csv')
+        csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_2x3.csv')
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
         df.to_csv(csv_path, index=False)
         print(f"Daten gespeichert: {csv_path}")

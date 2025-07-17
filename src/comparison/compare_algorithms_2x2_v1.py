@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from src.shared.config import EXPORT_PATH_COMP, SETUP_NAME
+from src.shared.config_utils import get_export_path
 
 
 def create_2x2_v1_visualization(comparison_data):
@@ -159,7 +160,7 @@ def create_2x2_v1_visualization(comparison_data):
     print("   Finalisiere Layout...")
     plt.tight_layout(rect=[0, 0.03, 1, 0.93])
 
-    save_path = os.path.join(EXPORT_PATH_COMP, f'{SETUP_NAME}algorithm_comparison_2x2_Visual1.pdf')
+    save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}algorithm_comparison_2x2_Visual1.pdf')
     print(f"   Speichere: {save_path}")
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
     print(f"✅ 2x2 V1 Vergleich gespeichert: {save_path}")
@@ -171,7 +172,7 @@ def main():
     print("=" * 50)
 
     # Load data from CSV if available
-    csv_path = os.path.join(EXPORT_PATH_COMP, 'algorithm_comparison_2x3.csv')
+    csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_2x3.csv')
     print(f"📁 Suche Daten in: {csv_path}")
 
     if os.path.exists(csv_path):

@@ -1,0 +1,11 @@
+algorithm,scenario,run,success_rate,avg_steps,avg_reward
+Q-Learning,static,1,75.6,8.1,-2.25
+Q-Learning,random_start,1,83.2,4.5,3.01
+Q-Learning,random_goal,1,31.6,7.6,-10.95
+Q-Learning,random_obstacles,1,10.4,5.4,-13.21
+Q-Learning,container,1,0.0,10.5,-15.81
+DQN,static,1,100.0,8.0,3.0
+DQN,random_start,1,100.0,4.22,6.78
+DQN,random_goal,1,32.0,8.51,-11.79
+DQN,random_obstacles,1,37.0,5.19,-7.42
+DQN,container,1,2.0,7.13,-15.09

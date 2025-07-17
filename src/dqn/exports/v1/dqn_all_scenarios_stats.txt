@@ -4,120 +4,50 @@ DQN ALL SCENARIOS STATISTICS
 SCENARIO: STATIC
 ------------------------------
 Run 1:
-  Training Success Rate: 4.0%
-  Evaluation Success Rate: 0.0%
-  Average Steps: 2.0
-  Average Reward: -12.00
+  Training Success Rate: 74.8%
+  Evaluation Success Rate: 100.0%
+  Average Steps: 8.0
+  Average Reward: 3.00
   Duration: 0.2 minutes
-
-Run 2:
-  Training Success Rate: 4.0%
-  Evaluation Success Rate: 0.0%
-  Average Steps: 2.0
-  Average Reward: -12.00
-  Duration: 0.3 minutes
-
-Run 3:
-  Training Success Rate: 4.0%
-  Evaluation Success Rate: 0.0%
-  Average Steps: 2.0
-  Average Reward: -12.00
-  Duration: 0.3 minutes
 
 
 SCENARIO: RANDOM_START
 ------------------------------
 Run 1:
-  Training Success Rate: 80.2%
+  Training Success Rate: 73.8%
   Evaluation Success Rate: 100.0%
-  Average Steps: 4.3
-  Average Reward: 6.69
-  Duration: 0.2 minutes
-
-Run 2:
-  Training Success Rate: 80.2%
-  Evaluation Success Rate: 100.0%
-  Average Steps: 4.3
-  Average Reward: 6.69
+  Average Steps: 4.2
+  Average Reward: 6.78
   Duration: 0.1 minutes
-
-Run 3:
-  Training Success Rate: 80.2%
-  Evaluation Success Rate: 100.0%
-  Average Steps: 4.3
-  Average Reward: 6.69
-  Duration: 0.2 minutes
 
 
 SCENARIO: RANDOM_GOAL
 ------------------------------
 Run 1:
-  Training Success Rate: 21.0%
-  Evaluation Success Rate: 18.0%
-  Average Steps: 8.0
-  Average Reward: -14.22
-  Duration: 0.3 minutes
-
-Run 2:
-  Training Success Rate: 21.0%
-  Evaluation Success Rate: 18.0%
-  Average Steps: 8.0
-  Average Reward: -14.22
-  Duration: 0.3 minutes
-
-Run 3:
-  Training Success Rate: 21.0%
-  Evaluation Success Rate: 18.0%
-  Average Steps: 8.0
-  Average Reward: -14.22
-  Duration: 0.3 minutes
+  Training Success Rate: 28.6%
+  Evaluation Success Rate: 32.0%
+  Average Steps: 8.5
+  Average Reward: -11.79
+  Duration: 0.1 minutes
 
 
 SCENARIO: RANDOM_OBSTACLES
 ------------------------------
 Run 1:
-  Training Success Rate: 9.4%
-  Evaluation Success Rate: 36.0%
-  Average Steps: 5.4
-  Average Reward: -7.85
-  Duration: 0.2 minutes
-
-Run 2:
-  Training Success Rate: 9.4%
-  Evaluation Success Rate: 36.0%
-  Average Steps: 5.4
-  Average Reward: -7.85
-  Duration: 0.2 minutes
-
-Run 3:
-  Training Success Rate: 9.4%
-  Evaluation Success Rate: 36.0%
-  Average Steps: 5.4
-  Average Reward: -7.85
-  Duration: 0.2 minutes
+  Training Success Rate: 25.2%
+  Evaluation Success Rate: 37.0%
+  Average Steps: 5.2
+  Average Reward: -7.42
+  Duration: 0.1 minutes
 
 
 SCENARIO: CONTAINER
 ------------------------------
 Run 1:
-  Training Success Rate: 1.6%
-  Evaluation Success Rate: 4.0%
-  Average Steps: 8.0
-  Average Reward: -13.69
-  Duration: 0.2 minutes
-
-Run 2:
-  Training Success Rate: 1.6%
-  Evaluation Success Rate: 4.0%
-  Average Steps: 8.0
-  Average Reward: -13.69
-  Duration: 0.3 minutes
-
-Run 3:
-  Training Success Rate: 1.6%
-  Evaluation Success Rate: 4.0%
-  Average Steps: 8.0
-  Average Reward: -13.69
-  Duration: 0.2 minutes
+  Training Success Rate: 2.2%
+  Evaluation Success Rate: 2.0%
+  Average Steps: 7.1
+  Average Reward: -15.09
+  Duration: 0.1 minutes
 
 
