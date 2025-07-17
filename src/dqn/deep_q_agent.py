@@ -25,7 +25,7 @@ Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state'
 class DQNNetwork(nn.Module):
     """Deep Q-Network für die Schiffsnavigation mit gymnasium Environments"""
 
-    def __init__(self, state_size: int, action_size: int, hidden_size: int = 128):
+    def __init__(self, state_size: int, action_size: int, hidden_size: int = 32):
         super(DQNNetwork, self).__init__()
 
         self.fc1 = nn.Linear(state_size, hidden_size)

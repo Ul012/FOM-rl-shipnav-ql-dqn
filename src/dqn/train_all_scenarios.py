@@ -29,7 +29,7 @@ class DQNScenarioRunner:
 
         self.results = {}
 
-    def run_all_scenarios(self, episodes: int = None, num_runs: int = 3) -> Dict[str, Any]:
+    def run_all_scenarios(self, episodes: int = None, num_runs: int = 1) -> Dict[str, Any]:
         """
         Führt Training für alle Szenarien durch.
 
@@ -341,7 +341,7 @@ def main():
     parser = argparse.ArgumentParser(description='DQN Training für alle Szenarien')
     parser.add_argument('--episodes', type=int, default=None,
                         help='Anzahl Episoden pro Szenario')
-    parser.add_argument('--runs', type=int, default=3,
+    parser.add_argument('--runs', type=int, default=1,
                         help='Anzahl Wiederholungen pro Szenario')
     parser.add_argument('--scenarios', nargs='+',
                         choices=['static', 'random_start', 'random_goal', 'random_obstacles', 'container'],
