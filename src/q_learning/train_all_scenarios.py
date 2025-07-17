@@ -148,7 +148,8 @@ def train_all_scenarios():
         # Sammeln der Metriken pro Szenario
         scenario_results.append({
             "name": scenario_name,
-            "success_rate": extract_value("Erfolgreiche Episoden", stdout, lambda x: float(x.split("/")[0]) / float(x.split("/")[1].strip("()")) * 100),
+            "success_rate": extract_value("Erfolgreiche Episoden", stdout,
+                                          lambda x: float(x.split("/")[0]) / float(x.split("/")[1].strip("()")) * 100),
             "total_reward": extract_value("Gesamtreward", stdout),
             "avg_reward": extract_value("Durchschnitt", stdout),
             "avg_steps": extract_value("Durchschnittliche Schritte", stdout),

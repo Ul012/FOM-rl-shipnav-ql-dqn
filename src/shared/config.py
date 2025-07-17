@@ -84,14 +84,14 @@ QL_ALPHA = 0.1  # Lernrate (learning rate) - nur Q-Learning. Mögliche Alternati
 # ============================================================================
 
 # Network Architecture
-DQN_STATE_SIZE = 18  # State vector size for DQN
-DQN_HIDDEN_SIZE = 128  # Hidden layer size
+DQN_STATE_SIZE = 25  # State vector size for DQN
+DQN_HIDDEN_SIZE = 32  # Hidden layer size
 DQN_LEARNING_RATE = 0.001  # Learning rate for neural network
 
 # Training Parameters
 DQN_BATCH_SIZE = 32  # Batch size for experience replay
-DQN_BUFFER_SIZE = 5000  # Experience replay buffer size
-DQN_TARGET_UPDATE_FREQ = 100  # Target network update frequency
+DQN_BUFFER_SIZE = 3000  # Experience replay buffer size
+DQN_TARGET_UPDATE_FREQ = 200  # Target network update frequency
 
 # DQN Exploration Parameter - nutzt gemeinsame Epsilon-Parameter
 # Verwendet abhängig von USE_EPSILON_DECAY:

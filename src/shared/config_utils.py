@@ -160,7 +160,7 @@ def validate_config() -> bool:
     if not (0.05 <= QL_ALPHA <= 0.5):
         warnings.append(f"Q-Learning Alpha außerhalb Standardbereich: {QL_ALPHA}")
 
-    if not (0.0005 <= DQN_LEARNING_RATE <= 0.01):
+    if not (0.0005 <= DQN_LEARNING_RATE <= 0.015):
         warnings.append(f"DQN Learning Rate außerhalb Standardbereich: {DQN_LEARNING_RATE}")
 
     # Check: Feste Epsilon-Werte sind gleich (für Fairness)
