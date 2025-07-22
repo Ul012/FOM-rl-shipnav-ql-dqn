@@ -59,24 +59,20 @@ Empfohlen wird daher die Nutzung der bereitgestellten Run-Konfigurationen in PyC
 
 Es stehen drei Varianten für den visuellen Vergleich der Algorithmen zur Verfügung:
 
-1. **2x3-Visualisierung** (`compare_algorithms_2x3.py`)  
-   → Führt die Evaluation durch und speichert die CSV-Datei (`algorithm_comparison_2x3.csv`)
+1. **Overview-Visualisierung** (`1_compare_algorithms_overview.py`)  
+   → Führt die Evaluation durch und speichert die CSV-Datei (`algorithm_comparison_overview.csv`)
 
-2. **2x2 V1** (`compare_algorithms_2x2_v1.py`)  
+2. **2x2 V1** (`compare_algorithms_scientific.py`)  
    → Wissenschaftliches Grid-Layout mit Erfolgsraten, Belohnung, Schritten und Scatterplot  
-   **Nutzt die CSV aus 2x3 als Grundlage.**
+   **Nutzt die CSV aus Overview-Variante als Grundlage.**
 
-3. **2x2 V2** (`compare_algorithms_2x2_v2.py`)  
-   → Fokus auf Single-Agent-Darstellung mit Heatmap  
-   **Nutzt ebenfalls die CSV aus 2x3 als Grundlage.**
+3. **2x2 V2** (`compare_algorithms_heatmap.py`)  
+   → Fokus auf Darstellung mit Heatmap  
+   **Nutzt ebenfalls die CSV aus Overview-Variante als Grundlage.**
 
-➡️ **Wichtig:** Die 2x3-Variante muss vor den anderen beiden ausgeführt werden.
+➡️ **Wichtig:** Die Overview-Variante muss vor den anderen beiden ausgeführt werden.
 
 
-```bash
-cd src/comparison
-python 2_compare_algorithms_scientific.py
-```
 
 ## 🌍 Szenarien
 

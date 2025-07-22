@@ -2,7 +2,15 @@
 
 ## Voraussetzungen
 
-Für das Projekt wird Python 3.8 oder höher benötigt. Empfohlen wird die Nutzung einer virtuellen Umgebung. Die Abhängigkeiten sind in der Datei `requirements.txt` definiert.
+Für das Projekt wird Python 3.8 oder höher benötigt. Empfohlen wird die Nutzung einer virtuellen Umgebung.
+Das Projekt wurde mit Python 3.11.5 entwickelt und getestet.
+ Die Abhängigkeiten sind in der Datei `requirements.txt` definiert.
+
+### Hardware-Unterstützung
+
+- **CPU:** Alle Algorithmen funktionieren auf Standard-CPUs
+- **GPU (optional):** DQN unterstützt CUDA-beschleunigtes Training bei verfügbarer NVIDIA-GPU
+- **RAM:** Mindestens 4GB empfohlen für größere Replay-Buffer
 
 ## Einrichtung
 

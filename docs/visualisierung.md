@@ -14,16 +14,16 @@ Diese Diagramme werden pro Szenario gespeichert. Zusätzlich wird für jede Meth
 
 Zum algorithmischen Vergleich stehen drei Visualisierungsformen zur Verfügung:
 
-1. **2x3-Vergleich** (`compare_algorithms_2x3.py`)  
+1. **Overview-Vergleich** (`1_compare_algorithms_overview.py`)  
    - Führt eine standardisierte Evaluation durch  
    - Exportiert CSV-Datei und Vergleichsplot  
    - Grundlage für weitere Visualisierungen
 
-2. **2x2 V1** (`compare_algorithms_2x2_v1.py`)  
+2. **Scientific** (`compare_algorithms_scientific.py`)  
    - Darstellung in vier Panels  
    - Erfolgsrate, Reward, Schritte und Scatterplot zur Effizienz
 
-3. **2x2 V2** (`compare_algorithms_2x2_v2.py`)  
+3. **Heatmap** (`compare_algorithms_heatmap.py`)  
    - Fokus auf Vergleich einzelner Szenarien  
    - Enthält Erfolgs-Heatmap  
    - Container-Szenario ist enthalten

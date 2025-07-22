@@ -33,4 +33,4 @@ Ziel ist ein reproduzierbarer Vergleich in mehreren Szenarien mit variabler Komp
 
 ## 🧪 Vergleichsoptionen
 
-Das Projekt enthält drei Varianten zur algorithmischen Ergebnisvisualisierung. Die zentrale Auswertung erfolgt über `compare_algorithms_2x3.py`. Auf Basis der erzeugten CSV können weitere Varianten wie 2x2-Vergleiche erzeugt werden.
+Das Projekt enthält drei Varianten zur algorithmischen Ergebnisvisualisierung. Die zentrale Auswertung erfolgt über `1_compare_algorithms_overview.py`. Auf Basis der erzeugten CSV können weitere Visualisierungs-Varianten erzeugt werden.
