@@ -1,4 +1,11 @@
 # src/dqn/train.py
+import torch
+print("=" * 50)
+if torch.cuda.is_available():
+    print(f"✅ CUDA verfügbar: {torch.cuda.get_device_name(0)} wird verwendet.")
+else:
+    print("⚠️ CUDA nicht verfügbar – PyTorch verwendet die CPU.")
+print("=" * 50)
 
 import sys
 import os
@@ -343,6 +350,12 @@ class DQNTrainer:
         print(f"  Erfolgsrate (letzte {len(recent_successes)}): {success_rate:.1f}%")
         print(f"  Exploration Rate: {self.agent.exploration_rate:.3f}")
         print(f"  Memory Size: {len(self.agent.memory)}")
+
+        if torch.cuda.is_available():
+            allocated = torch.cuda.memory_allocated() / 1024 ** 2  # in MB
+            reserved = torch.cuda.memory_reserved() / 1024 ** 2
+            print(f"  GPU Speicher genutzt: {allocated:.2f} MB (reserviert: {reserved:.2f} MB)")
+
         if self.agent.losses:
             recent_loss = np.mean(self.agent.losses[-10:])
             print(f"  Durchschnittlicher Loss: {recent_loss:.4f}")

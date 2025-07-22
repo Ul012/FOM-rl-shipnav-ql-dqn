@@ -4,50 +4,50 @@ DQN ALL SCENARIOS STATISTICS
 SCENARIO: STATIC
 ------------------------------
 Run 1:
-  Training Success Rate: 17.8%
-  Evaluation Success Rate: 78.0%
-  Average Steps: 6.9
-  Average Reward: -0.49
-  Duration: 0.1 minutes
+  Training Success Rate: 1.4%
+  Evaluation Success Rate: 0.0%
+  Average Steps: 4.8
+  Average Reward: -14.77
+  Duration: 0.2 minutes
 
 
 SCENARIO: RANDOM_START
 ------------------------------
 Run 1:
-  Training Success Rate: 60.0%
-  Evaluation Success Rate: 100.0%
+  Training Success Rate: 58.6%
+  Evaluation Success Rate: 98.0%
   Average Steps: 4.3
-  Average Reward: 6.74
-  Duration: 0.1 minutes
+  Average Reward: 6.27
+  Duration: 0.2 minutes
 
 
 SCENARIO: RANDOM_GOAL
 ------------------------------
 Run 1:
-  Training Success Rate: 20.6%
-  Evaluation Success Rate: 36.0%
-  Average Steps: 8.1
-  Average Reward: -10.55
-  Duration: 0.1 minutes
+  Training Success Rate: 23.8%
+  Evaluation Success Rate: 35.0%
+  Average Steps: 7.9
+  Average Reward: -10.51
+  Duration: 0.3 minutes
 
 
 SCENARIO: RANDOM_OBSTACLES
 ------------------------------
 Run 1:
-  Training Success Rate: 9.4%
-  Evaluation Success Rate: 35.0%
-  Average Steps: 5.4
-  Average Reward: -8.02
-  Duration: 0.1 minutes
+  Training Success Rate: 11.4%
+  Evaluation Success Rate: 36.0%
+  Average Steps: 5.3
+  Average Reward: -7.79
+  Duration: 0.3 minutes
 
 
 SCENARIO: CONTAINER
 ------------------------------
 Run 1:
-  Training Success Rate: 4.8%
-  Evaluation Success Rate: 9.0%
-  Average Steps: 11.4
-  Average Reward: -15.18
-  Duration: 0.2 minutes
+  Training Success Rate: 2.8%
+  Evaluation Success Rate: 5.0%
+  Average Steps: 9.0
+  Average Reward: -15.15
+  Duration: 0.3 minutes
 
 

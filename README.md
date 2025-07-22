@@ -75,7 +75,7 @@ Es stehen drei Varianten für den visuellen Vergleich der Algorithmen zur Verfü
 
 ```bash
 cd src/comparison
-python compare_algorithms_2x2_v1.py
+python 2_compare_algorithms_scientific.py
 ```
 
 ## 🌍 Szenarien

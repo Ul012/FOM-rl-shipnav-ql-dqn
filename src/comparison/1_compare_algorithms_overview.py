@@ -14,8 +14,7 @@ from dataclasses import dataclass
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from src.shared.config import (
-    SEED, SETUP_NAME, EPISODES, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP, EXPORT_PATH_QL, EXPORT_PATH_DQN,
-    GAMMA, QL_ALPHA, QL_EPSILON_FIXED, DQN_EPSILON_FIXED, DQN_LEARNING_RATE, EPSILON_START, EPSILON_END, EPSILON_DECAY
+    SEED, SETUP_NAME, EVAL_EPISODES, EVAL_MAX_STEPS, EXPORT_PATH_COMP
 )
 from src.shared.config_utils import get_dqn_model_path, get_q_table_path, get_export_path
 
@@ -329,14 +328,14 @@ class AlgorithmComparison:
             axes[1, i].grid(True, alpha=0.3)
 
         plt.tight_layout()
-        save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}_algorithm_comparison_2x3_Visual0.pdf')
+        save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}_algorithm_comparison_overview.pdf')
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"2x3 Vergleich gespeichert: {save_path}")
         plt.close()
 
     def _save_results(self, comparison_data: List[Dict]):
         df = pd.DataFrame(comparison_data)
-        csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_2x3.csv')
+        csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_overview.csv')
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
         df.to_csv(csv_path, index=False)
         print(f"Daten gespeichert: {csv_path}")

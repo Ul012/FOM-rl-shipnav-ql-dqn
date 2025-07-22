@@ -1,4 +1,4 @@
-# src/comparison/compare_algorithms_2x2_v2.py
+# src/comparison/3_compare_algorithms_heatmap.py
 
 import pandas as pd
 import numpy as np
@@ -8,13 +8,13 @@ from src.shared.config import EXPORT_PATH_COMP, SETUP_NAME
 from src.shared.config_utils import get_export_path
 
 
-def create_2x2_v2_visualization(comparison_data):
-    """Erstellt Single-Agent Szenario-Vergleich (früher V3)."""
+def create_heatmap_visualization(comparison_data):
+    """Erstellt Heatmap Szenario-Vergleich."""
 
     df = pd.DataFrame(comparison_data)
     colors = {'Q-Learning': '#1f77b4', 'DQN': '#ff7f0e'}
 
-    # Setup - 2x2 Grid
+    # Setup - Heatmap Grid
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     fig.suptitle('Single-Agent Szenario-Vergleich', fontsize=16, fontweight='bold')
 
@@ -110,21 +110,21 @@ def create_2x2_v2_visualization(comparison_data):
     plt.tight_layout()
 
     # Speichern
-    save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}algorithm_comparison_2x2_Visual2.pdf')
+    save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}algorithm_comparison_heatmap.pdf')
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
-    print(f"2x2 V2 Vergleich gespeichert: {save_path}")
+    print(f"Heatmap Vergleich gespeichert: {save_path}")
     plt.close()
 
 
 def main():
     # Load data from CSV if available
-    csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_2x3.csv')
+    csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_overview.csv')
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         comparison_data = df.to_dict('records')
-        create_2x2_v2_visualization(comparison_data)
+        create_heatmap_visualization(comparison_data)
     else:
-        print("❌ Keine Daten gefunden. Führen Sie zuerst compare_algorithms_2x3.py aus.")
+        print("❌ Keine Daten gefunden. Führen Sie zuerst compare_algorithms_overview.py aus.")
 
 
 if __name__ == "__main__":

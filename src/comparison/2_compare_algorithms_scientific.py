@@ -1,4 +1,4 @@
-# src/comparison/compare_algorithms_2x2_v1.py
+# src/comparison/2_compare_algorithms_scientific.py
 
 import pandas as pd
 import numpy as np
@@ -8,10 +8,10 @@ from src.shared.config import EXPORT_PATH_COMP, SETUP_NAME
 from src.shared.config_utils import get_export_path
 
 
-def create_2x2_v1_visualization(comparison_data):
-    """Erstellt wissenschaftliches 2x2 Grid (früher V2)."""
+def create_scientific_visualization(comparison_data):
+    """Erstellt scientific Visualisierung."""
 
-    print("🎨 Erstelle 2x2 V1 Visualisierung...")
+    print("🎨 Erstelle scientific Visualisierung...")
 
     df = pd.DataFrame(comparison_data)
     colors = {'Q-Learning': '#1f77b4', 'DQN': '#ff7f0e'}
@@ -160,19 +160,19 @@ def create_2x2_v1_visualization(comparison_data):
     print("   Finalisiere Layout...")
     plt.tight_layout(rect=[0, 0.03, 1, 0.93])
 
-    save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}algorithm_comparison_2x2_Visual1.pdf')
+    save_path = os.path.join(get_export_path(EXPORT_PATH_COMP), f'{SETUP_NAME}algorithm_comparison_scientific.pdf')
     print(f"   Speichere: {save_path}")
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
-    print(f"✅ 2x2 V1 Vergleich gespeichert: {save_path}")
+    print(f"✅ Scientific Vergleich gespeichert: {save_path}")
     plt.close()
 
 
 def main():
-    print("🚀 Starte 2x2 V1 Algorithmus-Vergleich")
+    print("🚀 Starte scientific Algorithmus-Vergleich")
     print("=" * 50)
 
     # Load data from CSV if available
-    csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_2x3.csv')
+    csv_path = os.path.join(get_export_path(EXPORT_PATH_COMP), 'algorithm_comparison_overview.csv')
     print(f"📁 Suche Daten in: {csv_path}")
 
     if os.path.exists(csv_path):
@@ -181,13 +181,13 @@ def main():
         comparison_data = df.to_dict('records')
         print(f"📊 {len(comparison_data)} Datenpunkte geladen")
 
-        create_2x2_v1_visualization(comparison_data)
+        create_scientific_visualization(comparison_data)
 
         print("=" * 50)
-        print("🎯 2x2 V1 Vergleich abgeschlossen!")
+        print("🎯 Scientific Vergleich abgeschlossen!")
     else:
-        print("❌ Keine Daten gefunden. Führen Sie zuerst compare_algorithms_2x3.py aus.")
-        print("💡 Ausführen mit: python src/comparison/compare_algorithms_2x3.py")
+        print("❌ Keine Daten gefunden. Führen Sie zuerst compare_algorithms_overview.py aus.")
+        print("💡 Ausführen mit: python src/comparison/compare_algorithms_overview.py")
 
 
 if __name__ == "__main__":
