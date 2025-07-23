@@ -30,7 +30,7 @@ def obs_to_state(obs, env_mode, grid_size=None):
 def check_success(reward, env_mode):
     from src.shared.config import REWARDS
     if env_mode == "container":
-        return reward == REWARDS["dropoff"]
+        return reward == (REWARDS["step"] + REWARDS["dropoff"])
     else:  # Grid-Environment
         return reward == REWARDS["goal"]
 

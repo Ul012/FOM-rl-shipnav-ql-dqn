@@ -8,7 +8,7 @@ from pathlib import Path
 # ============================================================================
 
 # Hyperparameter-Setup
-SETUP_NAME = "v1"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
+SETUP_NAME = "v2"  # Bei Auswahl "v2" USE_EPSILON_DECAY = True setzen. Bei "v1" auf USE_EPSILON_DECAY = False setzen. Wird für Exportverzeichnisse verwendet
 
 # Grid Constants
 GRID_SIZE = 5
@@ -33,7 +33,7 @@ CONTAINER_START_POS = (0, 0)
 CONTAINER_OBSTACLES = [(1, 3), (1, 2), (3, 1)]
 
 # Umgebungskonfiguration - für beide identisch
-ENV_MODE = "static"  # Optionen: static, random_start, random_goal, random_obstacles, container
+ENV_MODE = "container"  # Optionen: static, random_start, random_goal, random_obstacles, container
 
 # ============================================================================
 # Rewardsystem
@@ -54,7 +54,7 @@ REWARDS = {
 # ============================================================================
 
 GAMMA = 0.95  # Diskontierungsfaktor. Mögliche Alternative: GAMMA = 0.99 # stärkerer Fokus auf Langzeit
-EPISODES = 500  # Trainings-Episoden
+EPISODES = 1000  # Trainings-Episoden
 MAX_STEPS = 100  # Max. Schritte pro Episode
 LOOP_THRESHOLD = 3  # Schleifenwiederholungen für Abbruch
 
@@ -62,7 +62,7 @@ LOOP_THRESHOLD = 3  # Schleifenwiederholungen für Abbruch
 EPSILON_START = 1.0  # Initial exploration rate - beide Algorithmen
 EPSILON_END = 0.01  # Final exploration rate - beide Algorithmen
 EPSILON_DECAY = 0.995  # Exploration decay rate - beide Algorithmen
-USE_EPSILON_DECAY = False  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
+USE_EPSILON_DECAY = True  # v1_ Standard, festes Epsilon, v2: Epsilon Decay aktivieren
 
 # Feste Epsilon-Werte (wenn USE_EPSILON_DECAY=False)
 QL_EPSILON_FIXED = 0.1  # Q-Learning festes Epsilon
